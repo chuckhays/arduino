@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "RTClib.h"
 
 #define BOARD_LED_PIN             13
 #define VBAT_ENABLED              1
@@ -8,6 +9,7 @@
   
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
+RTC_DS3231 rtc;
 
 void renderBattery (float battery)
 {
@@ -24,7 +26,6 @@ void renderBattery (float battery)
   display.setCursor(BATTTEXT_STARTX, BATTTEXT_STARTY);
   display.print(battery, 2);
   display.println("V");
-  Serial.println("Sending to display");
 
   // Draw the base of the battery
   display.drawLine( BATTICON_STARTX + 1,
@@ -110,7 +111,6 @@ void renderBattery (float battery)
   {
     // No bars
   }
-  display.display();
 }
 
 void updateVbat() 
@@ -138,6 +138,20 @@ void setup()
   Serial.begin(9600);
   // Wait for Serial Monitor
 //  while(!Serial) delay(1);
+
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1);
+  }
+
+  if (rtc.lostPower()) {
+    Serial.println("RTC lost power, lets set the time!");
+    // following line sets the RTC to the date & time this sketch was compiled
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // This line sets the RTC with an explicit date & time, for example to set
+    // January 21, 2014 at 3am you would call:
+    // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+  }
    
   // Setup the LED pin
   pinMode(BOARD_LED_PIN, OUTPUT);
@@ -165,6 +179,21 @@ void loop()
 {
   // Update the battery level
   updateVbat();
+  DateTime now = rtc.now();
+  display.setCursor(0, 10);
+  display.print(now.year(), DEC);
+  display.print('/');
+  display.print(now.month(), DEC);
+  display.print('/');
+  display.print(now.day(), DEC);
+  display.print(" ");
+  display.print(now.hour(), DEC);
+  display.print(':');
+  display.print(now.minute(), DEC);
+  display.print(':');
+  display.print(now.second(), DEC);
+  display.println();
+  display.display();
   digitalWrite(BOARD_LED_PIN, HIGH);
   delay(100);
   digitalWrite(BOARD_LED_PIN, LOW);
