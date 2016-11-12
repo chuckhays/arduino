@@ -175,7 +175,7 @@ void setup()
   //rtc.enableAlarm(rtc.MATCH_SS);
    
   // Setup the LED pin
-  pinMode(BOARD_LED_PIN, OUTPUT);
+  //pinMode(BOARD_LED_PIN, OUTPUT);
  
   // Setup the OLED display
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
@@ -213,9 +213,9 @@ void loop()
   display.print(now.second(), DEC);
   display.println();
   display.display();
-  digitalWrite(BOARD_LED_PIN, HIGH);
-  delay(100);
-  digitalWrite(BOARD_LED_PIN, LOW);
-  delay(100);
+  //digitalWrite(BOARD_LED_PIN, HIGH);
+  //delay(100);
+  //digitalWrite(BOARD_LED_PIN, LOW);
+  //delay(100);
   //rtc.standbyMode();
 }
