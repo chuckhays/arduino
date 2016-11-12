@@ -3,10 +3,16 @@
 #include <Adafruit_SSD1306.h>
 #include "RTClib.h"
 #include <RTCZero.h>
+#include <SPI.h>
+#include <SD.h>
+
+const int cardSelect = 4;
 
 #define BOARD_LED_PIN             13
 #define VBAT_PIN                  A7
 #define V12_PIN                   A2
+#define SamplesPerCycle 30
+#define SamplesPerFile 1440
   
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
@@ -14,6 +20,12 @@ RTC_DS3231 offboard_rtc;
 
 /* Create an rtc object */
 RTCZero rtc;
+
+char filename[15];
+File logfile;
+unsigned int CurrentCycleCount;  // Num of smaples in current cycle, before uSD flush call
+unsigned int CurrentFileCount;   // Num of samples in current file
+unsigned int totalCount;
 
 #define BATTTEXT_STARTX     77
 #define BATTTEXT_STARTY     0
@@ -148,17 +160,18 @@ float getV12()
 
 void setup()
 {
-  Serial.begin(9600);
+  totalCount = 0;
+  //Serial.begin(9600);
   // Wait for Serial Monitor
 //  while(!Serial) delay(1);
 
   if (! offboard_rtc.begin()) {
-    Serial.println("Couldn't find RTC");
-    while (1);
+    //Serial.println("Couldn't find RTC");
+    //while (1);
   }
 
   if (offboard_rtc.lostPower()) {
-    Serial.println("RTC lost power, lets set the time!");
+    //Serial.println("RTC lost power, lets set the time!");
     // following line sets the RTC to the date & time this sketch was compiled
     offboard_rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
     // This line sets the RTC with an explicit date & time, for example to set
@@ -187,6 +200,9 @@ void setup()
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.display();
+
+ strcpy(filename, "ANALOG00.CSV");   // Template for file name, characters 6 & 7 get set automatically later
+  CreateFile();
 }
 
 void loop()
@@ -212,10 +228,64 @@ void loop()
   display.print(':');
   display.print(now.second(), DEC);
   display.println();
+  totalCount += 1;
+  display.print(totalCount);
+  display.print(" ");
+  display.print(CurrentCycleCount);
+  display.print(" ");
+  display.print(CurrentFileCount);
   display.display();
   //digitalWrite(BOARD_LED_PIN, HIGH);
   //delay(100);
   //digitalWrite(BOARD_LED_PIN, LOW);
   //delay(100);
+  CurrentCycleCount += 1;       //  Increment samples in current uSD flush cycle
+  CurrentFileCount += 1;        //  Increment samples in current file
+
+  logfile.print(now.unixtime());
+  logfile.print(",");
+  logfile.print(v1, 2);
+  logfile.print(",");
+  logfile.println(v2, 2);
+
+  //  Code to limit the number of power hungry writes to the uSD
+  //  Don't sync too often - requires 2048 bytes of I/O to SD card. 512 bytes of I/O if using Fat16 library
+  //  But this code forces it to sync at a fixed interval, i.e. once per hour etc depending on what is set.
+  if( CurrentCycleCount >= SamplesPerCycle ) {
+    logfile.flush();
+    CurrentCycleCount = 0;
+  }
+
+  // Code to increment files limiting number of lines in each hence size, close the open file first.
+  if( CurrentFileCount >= SamplesPerFile ) {
+    if (logfile != NULL) {//(logfile.isOpen()) {
+      logfile.close();
+    }
+    CreateFile();
+    CurrentFileCount = 0;
+  }
+  
   //rtc.standbyMode();
+  delay(60000);
+}
+
+void CreateFile()
+{
+  // see if the card is present and can be initialized:
+  if (!SD.begin(cardSelect)) {
+    return;
+  }
+  
+  for (uint8_t i = 0; i < 100; i++) {
+    filename[6] = '0' + i/10;
+    filename[7] = '0' + i%10;
+    // create if does not exist, do not open existing, write, sync after write
+    if (! SD.exists(filename)) {
+      break;
+    }
+  }  
+
+  logfile = SD.open(filename, FILE_WRITE);
+  if( ! logfile ) {
+  }
 }
