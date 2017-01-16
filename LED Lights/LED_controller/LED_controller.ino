@@ -1,6 +1,7 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
+#include <Adafruit_NeoPixel.h>
 
 #define STMPE_CS 6
 #define TFT_CS   9
@@ -34,6 +35,10 @@
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
+#define PIN 6
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(444 /*292 + 152*/, PIN, NEO_GRBW + NEO_KHZ800);
+
 int bar = 0;
 int red = 0;
 int green = 0;
@@ -42,7 +47,9 @@ int white = 255;
 
 void setup() {
   Serial.begin(115200);
-  delay(3000);
+  strip.setBrightness(255);
+  strip.begin();
+  strip.show();
   tft.begin();
   tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
@@ -57,12 +64,13 @@ void setup() {
   drawGreenOutline();
   drawBlueOutline();
   drawWhiteOutline();
+  fadeIn(red, green, blue, white, 255);
 }
-
 
 void loop(void) {
   processInput();
   updateBars();
+  updateLEDs();
 }
 
 void processInput() {
@@ -187,4 +195,32 @@ void drawBlueOutline() {
 
 void drawWhiteOutline() {
   tft.drawRect(WHITEBARX, BARMINY, BARWIDTH + BAROUTLINE + BAROUTLINE, BARMAXY - BARMINY, ILI9341_WHITE);
+}
+
+uint8_t scaleColor(uint8_t c, uint8_t brightness) {
+  return (c * brightness) >> 8;
+}
+
+void updateLEDs() {
+  for(uint16_t n=0; n < strip.numPixels(); ++n) {
+    strip.setPixelColor(n, red, green, blue, white);
+  }
+  strip.show();
+}
+
+void fadeIn(uint8_t r, uint8_t g, uint8_t b, uint8_t w, uint8_t maxBrightness) {
+  for(uint16_t i = 0; i < maxBrightness; i = i+5) {
+    uint8_t newR = scaleColor(r, i);
+    uint8_t newG = scaleColor(g, i);
+    uint8_t newB = scaleColor(b, i);
+    uint8_t newW = scaleColor(w, i);
+    for(uint16_t n=0; n < strip.numPixels(); ++n) {
+      strip.setPixelColor(n, newR, newG, newB, newW);
+    }
+    strip.show();
+  }
+  for(uint16_t n=0; n < strip.numPixels(); ++n) {
+    strip.setPixelColor(n, r, g, b, w);
+  }
+  strip.show();
 }
