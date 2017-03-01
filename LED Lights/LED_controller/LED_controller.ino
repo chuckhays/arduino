@@ -32,13 +32,15 @@ int white = 255;
 void setup() {
   Bars *b = new Bars(&tft, &strip);
   modes[0] = b;
+  
   Serial.begin(115200);
   strip.setBrightness(255);
   strip.begin();
   strip.show();
   tft.begin();
-  tft.setRotation(1);
+  tft.setRotation(2);
   tft.fillScreen(ILI9341_BLACK);
+  b->load();
  
 //  fadeIn(red, green, blue, white, 255);
 }

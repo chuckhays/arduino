@@ -12,14 +12,14 @@
 #define LINE3 43
 #define TEXTX 25
 
-#define BARWIDTH 30
-#define BAROFFSET 50
-#define REDBARX 100
+#define BARWIDTH 25
+#define BAROFFSET 40
+#define REDBARX 80
 #define GREENBARX (REDBARX + BAROFFSET)
 #define BLUEBARX (GREENBARX + BAROFFSET)
 #define WHITEBARX (BLUEBARX + BAROFFSET)
 #define BAROUTLINE 3
-#define BARMAXY 230
+#define BARMAXY 310
 #define BARMINY 10
 
 
@@ -87,13 +87,20 @@ void Bars::processInput(int x, int y, int sw) {
   }
   if (y < MINSIGNAL) {
     changeBarValue(-MAXSTEP);
+    x=0;
   } else if (y < STARTLOWSIGNAL) {
     changeBarValue(-(STARTLOWSIGNAL - y) * MAXSTEP / (STARTLOWSIGNAL - MINSIGNAL));
+    x=1;
   } else if (y > MAXSIGNAL) {
     changeBarValue(MAXSTEP);
+    x=2;
   } else if (y > STARTHIGHSIGNAL) {
     changeBarValue((y - STARTHIGHSIGNAL) * MAXSTEP / (MAXSIGNAL - STARTHIGHSIGNAL));
+    x=3;
+  } else {
+    x = 4;
   }
+  x=red;
 
   tft->fillRect(TEXTX, LINE1, 50, 60, ILI9341_BLACK);
   tft->setCursor(TEXTX, LINE1);
@@ -116,7 +123,13 @@ void Bars::changeBar(int diff) {
 void Bars::changeBarValue(int diff) {
   switch (bar) {
     case 0:
+    Serial.print("diff:");
+    Serial.print(diff);
+    Serial.print(" red:");
+    Serial.print(red);
       red = coerceValue(red + diff);
+      Serial.print(" new red:");
+      Serial.println(red);
       break;
     case 1:
       green = coerceValue(green + diff);
