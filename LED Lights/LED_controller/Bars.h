@@ -7,9 +7,9 @@
 #include <Adafruit_ILI9341.h>
 #include <Adafruit_NeoPixel.h>
 
-#define LINE1 0
-#define LINE2 20
-#define LINE3 40
+#define LINE1 3
+#define LINE2 23
+#define LINE3 43
 #define TEXTX 25
 
 #define BARWIDTH 30
