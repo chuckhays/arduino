@@ -4,6 +4,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #include "Bars.h"
+#include "Cycle.h"
 
 #define STMPE_CS 6
 #define TFT_CS   9
@@ -19,7 +20,7 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 #define PIN 6
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(444 /*292 + 152*/, PIN, NEO_GRBW + NEO_KHZ800);
-#define MODES 1
+#define MODES 2
 Mode* modes[MODES];
 int currentMode = 0;
 
@@ -30,19 +31,24 @@ int blue = 0;
 int white = 255;
 
 void setup() {
-  Bars *b = new Bars(&tft, &strip);
-  modes[0] = b;
-  
-  Serial.begin(115200);
   strip.setBrightness(255);
   strip.begin();
+  for(uint16_t n=0; n < strip.numPixels(); ++n) {
+    strip.setPixelColor(n, 0, 0, 0, 255);
+  }
   strip.show();
+  Bars *b = new Bars(&tft, &strip);
+  modes[0] = b;
+
+  Cycle *c = new Cycle(&tft, &strip);
+  modes[1] = c;
+  
+  Serial.begin(115200);
+
   tft.begin();
   tft.setRotation(2);
   tft.fillScreen(ILI9341_BLACK);
   b->load();
- 
-//  fadeIn(red, green, blue, white, 255);
 }
 
 void loop(void) {
@@ -63,5 +69,10 @@ void loop(void) {
   mode->processInput(x, y, s);
   mode->draw();
   mode->updateLEDs();
+  if (s == 0) {
+    currentMode = (currentMode + 1) % MODES;
+    mode = modes[currentMode];
+    mode->load();
+  }
 }
 
