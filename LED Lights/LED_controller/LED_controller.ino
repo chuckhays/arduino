@@ -1,10 +1,10 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
-#include <Adafruit_NeoPixel.h>
 
 #include "Bars.h"
 #include "Cycle.h"
+#include "Strip.h"
 
 #define STMPE_CS 6
 #define TFT_CS   9
@@ -19,7 +19,7 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 #define PIN 6
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(444 /*292 + 152*/, PIN, NEO_GRBW + NEO_KHZ800);
+Strip strip = Strip(PIN);
 #define MODES 2
 Mode* modes[MODES];
 int currentMode = 0;
@@ -31,8 +31,6 @@ int blue = 0;
 int white = 255;
 
 void setup() {
-  strip.setBrightness(255);
-  strip.begin();
   for(uint16_t n=0; n < strip.numPixels(); ++n) {
     strip.setPixelColor(n, 0, 0, 0, 255);
   }

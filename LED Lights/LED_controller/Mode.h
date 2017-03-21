@@ -3,11 +3,12 @@
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
-#include <Adafruit_NeoPixel.h>
+
+#include "Strip.h"
 
 class Mode {
   public:
-    Mode(Adafruit_ILI9341* t, Adafruit_NeoPixel* s);
+    Mode(Adafruit_ILI9341* t, Strip* s);
     virtual void load() = 0;
     virtual void processInput(int x, int y, int sw) = 0;
     virtual void draw() = 0;
@@ -16,10 +17,10 @@ class Mode {
     uint8_t scaleColor(uint8_t c, uint8_t brightness);
   protected:
     Adafruit_ILI9341* tft;
-    Adafruit_NeoPixel* strip;
+    Strip* strip;
 };
 
-Mode::Mode(Adafruit_ILI9341* t, Adafruit_NeoPixel* s) {
+Mode::Mode(Adafruit_ILI9341* t, Strip* s) {
   tft = t;
   strip = s;
 }

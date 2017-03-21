@@ -2,10 +2,10 @@
 #define _BARS_H
 
 #include "Mode.h"
+#include "Strip.h"
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
-#include <Adafruit_NeoPixel.h>
 
 #define LINE1 3
 #define LINE2 23
@@ -31,7 +31,7 @@
 
 class Bars : public Mode {
   public:
-    Bars(Adafruit_ILI9341* t, Adafruit_NeoPixel* s);
+    Bars(Adafruit_ILI9341* t, Strip* s);
     void load();
     void processInput(int x, int y, int sw);
     void draw();
@@ -58,7 +58,7 @@ class Bars : public Mode {
     int white = 255;
 };
 
-Bars::Bars(Adafruit_ILI9341* t, Adafruit_NeoPixel* s) : Mode(t, s) {
+Bars::Bars(Adafruit_ILI9341* t, Strip* s) : Mode(t, s) {
   
 }
 

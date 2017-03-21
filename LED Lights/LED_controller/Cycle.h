@@ -2,10 +2,11 @@
 #define _CYCLE_H
 
 #include "Mode.h"
+#include "Strip.h"
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
-#include <Adafruit_NeoPixel.h>
+
 
 #define LINE1 3
 #define LINE2 23
@@ -31,7 +32,7 @@
 
 class Cycle : public Mode {
   public:
-    Cycle(Adafruit_ILI9341* t, Adafruit_NeoPixel* s);
+    Cycle(Adafruit_ILI9341* t, Strip* s);
     void load();
     void processInput(int x, int y, int sw);
     void draw();
@@ -60,7 +61,7 @@ class Cycle : public Mode {
     int white = 255;
 };
 
-Cycle::Cycle(Adafruit_ILI9341* t, Adafruit_NeoPixel* s) : Mode(t, s) {
+Cycle::Cycle(Adafruit_ILI9341* t, Strip* s) : Mode(t, s) {
   
 }
 
