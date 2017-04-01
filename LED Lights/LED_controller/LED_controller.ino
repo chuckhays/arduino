@@ -18,6 +18,7 @@
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 #define PIN 6
+#define ENABLE_PIN 12
 
 Strip strip = Strip(PIN);
 #define MODES 2
@@ -31,6 +32,8 @@ int blue = 0;
 int white = 255;
 
 void setup() {
+  pinMode(ENABLE_PIN, OUTPUT);
+  digitalWrite(ENABLE_PIN, HIGH);
   for(uint16_t n=0; n < strip.numPixels(); ++n) {
     strip.setPixelColor(n, 0, 0, 0, 255);
   }

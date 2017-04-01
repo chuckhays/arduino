@@ -123,13 +123,7 @@ void Bars::changeBar(int diff) {
 void Bars::changeBarValue(int diff) {
   switch (bar) {
     case 0:
-    Serial.print("diff:");
-    Serial.print(diff);
-    Serial.print(" red:");
-    Serial.print(red);
       red = coerceValue(red + diff);
-      Serial.print(" new red:");
-      Serial.println(red);
       break;
     case 1:
       green = coerceValue(green + diff);

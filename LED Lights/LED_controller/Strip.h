@@ -9,7 +9,7 @@
 class Strip {
   public:
     // Constructor: pin number
-    Strip(uint8_t p=6);
+    Strip(uint8_t p);
 
     void setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w);
     void setPixelColor(uint16_t n, uint32_t c);
