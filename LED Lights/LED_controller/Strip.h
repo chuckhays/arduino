@@ -15,21 +15,21 @@ class Strip {
     void setPixelColor(uint16_t n, uint32_t c);
     uint16_t numPixels(void) const { return NUM_PIXELS; }
     void show() {
-      strip->show();
+      strip.show();
     }
     uint32_t Color(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
-      return strip->Color(r,g,b,w);
+      return strip.Color(r,g,b,w);
     }
 
   private:
-    Adafruit_NeoPixel *strip;
+    Adafruit_NeoPixel strip;
 
 };
 
 Strip::Strip(uint8_t p) {
-  strip = new Adafruit_NeoPixel(444, p, NEO_GRBW + NEO_KHZ800);
-  strip->setBrightness(255);
-  strip->begin();
+  strip = Adafruit_NeoPixel(444, p, NEO_GRBW + NEO_KHZ800);
+  strip.setBrightness(255);
+  strip.begin();
 }
 
 void Strip::setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
@@ -74,10 +74,10 @@ H 308 n - 110 X
      upper = n - 110;
    }
    if (upper < NUM_PIXELS) {
-    strip->setPixelColor(upper, r, g, b, w);
+    strip.setPixelColor(upper, r, g, b, w);
    }
    if (lower < NUM_PIXELS) {
-    strip->setPixelColor(lower, r, g, b, w);
+    strip.setPixelColor(lower, r, g, b, w);
    }
 }
 
