@@ -5,6 +5,7 @@
 
 #define NONE 1000
 #define NUM_PIXELS 308
+#define PHYSICAL_NUM_PIXELS 444
 
 class Strip {
   public:
@@ -27,7 +28,7 @@ class Strip {
 };
 
 Strip::Strip(uint8_t p) {
-  strip = Adafruit_NeoPixel(444, p, NEO_GRBW + NEO_KHZ800);
+  strip = Adafruit_NeoPixel(PHYSICAL_NUM_PIXELS, p, NEO_GRBW + NEO_KHZ800);
   strip.setBrightness(255);
   strip.begin();
 }
@@ -73,10 +74,11 @@ H 308 n - 110 X
    } else if (n < 308) {
      upper = n - 110;
    }
-   if (upper < NUM_PIXELS) {
+   
+   if (upper < PHYSICAL_NUM_PIXELS) {
     strip.setPixelColor(upper, r, g, b, w);
    }
-   if (lower < NUM_PIXELS) {
+   if (lower < PHYSICAL_NUM_PIXELS) {
     strip.setPixelColor(lower, r, g, b, w);
    }
 }

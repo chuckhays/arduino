@@ -156,6 +156,18 @@ void Cycle::draw() {
 
 void Cycle::updateLEDs() {
  uint16_t i, j;
+
+for(i=0; i < strip->numPixels(); ++i) {
+for(j=0; j<strip->numPixels(); ++j) {
+  if (j == i) {
+    strip->setPixelColor(j, 0, 0, 0, 255);
+  } else {
+    strip->setPixelColor(j, 255, 0, 0, 0);
+  }
+  delay(5);
+}
+}
+ /*
   for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
     for(i=0; i< strip->numPixels(); i++) {
       strip->setPixelColor(i, Wheel(((i * 256 / strip->numPixels()) + j) & 255));
@@ -163,6 +175,7 @@ void Cycle::updateLEDs() {
     strip->show();
     delay(5);
   }
+  */
 }
 
 // Input a value 0 to 255 to get a color value.
