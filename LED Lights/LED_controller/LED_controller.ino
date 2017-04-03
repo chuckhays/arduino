@@ -38,18 +38,21 @@ void setup() {
     strip.setPixelColor(n, 0, 0, 0, 255);
   }
   strip.show();
+  
+  Cycle *c = new Cycle(&tft, &strip);
+  modes[1] = c;
+  
   Bars *b = new Bars(&tft, &strip);
   modes[0] = b;
 
-  Cycle *c = new Cycle(&tft, &strip);
-  modes[1] = c;
+ 
   
   Serial.begin(115200);
 
   tft.begin();
   tft.setRotation(2);
   tft.fillScreen(ILI9341_BLACK);
-  b->load();
+  modes[currentMode]->load();
 }
 
 void loop(void) {

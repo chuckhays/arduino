@@ -52,13 +52,15 @@ class Cycle : public Mode {
     void drawWhiteBar(int fill);
     void drawBar(int16_t x, int fill, uint16_t color);
 
-    uint32_t Wheel(byte WheelPos);
+    //uint32_t Wheel(byte WheelPos);
 
     int bar = 0;
     int red = 0;
     int green = 0;
     int blue = 0;
     int white = 255;
+
+    int c = 0;
 };
 
 Cycle::Cycle(Adafruit_ILI9341* t, Strip* s) : Mode(t, s) {
@@ -126,13 +128,7 @@ void Cycle::changeBar(int diff) {
 void Cycle::changeBarValue(int diff) {
   switch (bar) {
     case 0:
-    Serial.print("diff:");
-    Serial.print(diff);
-    Serial.print(" red:");
-    Serial.print(red);
       red = coerceValue(red + diff);
-      Serial.print(" new red:");
-      Serial.println(red);
       break;
     case 1:
       green = coerceValue(green + diff);
@@ -155,18 +151,27 @@ void Cycle::draw() {
 }
 
 void Cycle::updateLEDs() {
- uint16_t i, j;
-
-for(i=0; i < strip->numPixels(); ++i) {
+  //c = (c + 1) % strip->numPixels();
+  //Serial.print("C:"); Serial.println(c);
+   for(uint16_t n=0; n < strip->numPixels(); ++n) {
+    strip->setPixelColor(n, 0, 0, 255, 0);
+  }
+  strip->show();
+  return;
+  /*
+  uint16_t j;
 for(j=0; j<strip->numPixels(); ++j) {
-  if (j == i) {
+
+    Serial.print(j);
+  if (j == c) {
     strip->setPixelColor(j, 0, 0, 0, 255);
   } else {
     strip->setPixelColor(j, 255, 0, 0, 0);
   }
-  delay(5);
-}
-}
+  
+  strip->show();
+  
+}*/
  /*
   for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
     for(i=0; i< strip->numPixels(); i++) {
@@ -177,7 +182,7 @@ for(j=0; j<strip->numPixels(); ++j) {
   }
   */
 }
-
+/*
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
 uint32_t Cycle::Wheel(byte WheelPos) {
@@ -192,7 +197,7 @@ uint32_t Cycle::Wheel(byte WheelPos) {
   WheelPos -= 170;
   return strip->Color(WheelPos * 3, 255 - WheelPos * 3, 0,0);
 }
-
+*/
 void Cycle::drawBarOutline(int bar) {
   tft->drawRect(REDBARX - BAROUTLINE, BARMINY - BAROUTLINE, BARWIDTH + BAROUTLINE + BAROUTLINE + BAROUTLINE + BAROUTLINE, BARMAXY - BARMINY + BAROUTLINE + BAROUTLINE, bar == 0 ? ILI9341_RED : ILI9341_BLACK);
   tft->drawRect(GREENBARX - BAROUTLINE, BARMINY - BAROUTLINE, BARWIDTH + BAROUTLINE + BAROUTLINE + BAROUTLINE + BAROUTLINE, BARMAXY - BARMINY + BAROUTLINE + BAROUTLINE, bar == 1 ? ILI9341_GREEN : ILI9341_BLACK);
@@ -201,7 +206,7 @@ void Cycle::drawBarOutline(int bar) {
 }
 
 void Cycle::drawRedBar(int fill) {
-  drawBar(REDBARX, fill, ILI9341_BLUE);
+  drawBar(REDBARX, fill, ILI9341_RED);
 }
 
 void Cycle::drawGreenBar(int fill) {

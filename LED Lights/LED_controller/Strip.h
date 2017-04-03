@@ -75,10 +75,10 @@ H 308 n - 110 X
      upper = n - 110;
    }
    
-   if (upper < PHYSICAL_NUM_PIXELS) {
+   if (upper < 436 && PHYSICAL_NUM_PIXELS) {
     strip.setPixelColor(upper, r, g, b, w);
    }
-   if (lower < PHYSICAL_NUM_PIXELS) {
+   if (lower < 436 && PHYSICAL_NUM_PIXELS) {
     strip.setPixelColor(lower, r, g, b, w);
    }
 }
