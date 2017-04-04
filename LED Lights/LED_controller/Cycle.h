@@ -76,7 +76,7 @@ void Cycle::load() {
   tft->setCursor(0, LINE2);
   tft->println("Y:");
   tft->setCursor(0, LINE3);
-  tft->println("S:");
+  tft->println("C:");
   drawRedOutline();
   drawGreenOutline();
   drawBlueOutline();
@@ -92,20 +92,13 @@ void Cycle::processInput(int x, int y, int sw) {
   }
   if (y < MINSIGNAL) {
     changeBarValue(-MAXSTEP);
-    x=0;
   } else if (y < STARTLOWSIGNAL) {
     changeBarValue(-(STARTLOWSIGNAL - y) * MAXSTEP / (STARTLOWSIGNAL - MINSIGNAL));
-    x=1;
   } else if (y > MAXSIGNAL) {
     changeBarValue(MAXSTEP);
-    x=2;
   } else if (y > STARTHIGHSIGNAL) {
     changeBarValue((y - STARTHIGHSIGNAL) * MAXSTEP / (MAXSIGNAL - STARTHIGHSIGNAL));
-    x=3;
-  } else {
-    x = 4;
   }
-  x=red;
 
   tft->fillRect(TEXTX, LINE1, 50, 60, ILI9341_BLACK);
   tft->setCursor(TEXTX, LINE1);
@@ -115,7 +108,7 @@ void Cycle::processInput(int x, int y, int sw) {
   tft->setCursor(TEXTX, LINE2);
   tft->println(y);
   tft->setCursor(TEXTX, LINE3);
-  tft->println(sw);
+  tft->println(c);
 }
 
 void Cycle::changeBar(int diff) {
@@ -151,27 +144,18 @@ void Cycle::draw() {
 }
 
 void Cycle::updateLEDs() {
-  //c = (c + 1) % strip->numPixels();
+  c = (c + 1) % strip->numPixels();
   //Serial.print("C:"); Serial.println(c);
-   for(uint16_t n=0; n < strip->numPixels(); ++n) {
-    strip->setPixelColor(n, 0, 0, 255, 0);
+  for(uint16_t n=0; n < strip->numPixels(); ++n) {
+    if (n == c) {
+      strip->setPixelColor(n, 0, 0, 0, 255);
+    } else {
+      strip->setPixelColor(n, 0, 0, 0, 0);
+    }
   }
   strip->show();
   return;
-  /*
-  uint16_t j;
-for(j=0; j<strip->numPixels(); ++j) {
-
-    Serial.print(j);
-  if (j == c) {
-    strip->setPixelColor(j, 0, 0, 0, 255);
-  } else {
-    strip->setPixelColor(j, 255, 0, 0, 0);
-  }
-  
-  strip->show();
-  
-}*/
+ 
  /*
   for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
     for(i=0; i< strip->numPixels(); i++) {

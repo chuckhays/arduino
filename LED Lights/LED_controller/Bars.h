@@ -22,7 +22,6 @@
 #define BARMAXY 310
 #define BARMINY 10
 
-
 #define STARTLOWSIGNAL 412
 #define STARTHIGHSIGNAL 612
 #define MAXSIGNAL 924
@@ -87,20 +86,13 @@ void Bars::processInput(int x, int y, int sw) {
   }
   if (y < MINSIGNAL) {
     changeBarValue(-MAXSTEP);
-    x=0;
   } else if (y < STARTLOWSIGNAL) {
     changeBarValue(-(STARTLOWSIGNAL - y) * MAXSTEP / (STARTLOWSIGNAL - MINSIGNAL));
-    x=1;
   } else if (y > MAXSIGNAL) {
     changeBarValue(MAXSTEP);
-    x=2;
   } else if (y > STARTHIGHSIGNAL) {
     changeBarValue((y - STARTHIGHSIGNAL) * MAXSTEP / (MAXSIGNAL - STARTHIGHSIGNAL));
-    x=3;
-  } else {
-    x = 4;
   }
-  x=red;
 
   tft->fillRect(TEXTX, LINE1, 50, 60, ILI9341_BLACK);
   tft->setCursor(TEXTX, LINE1);

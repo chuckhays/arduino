@@ -40,13 +40,11 @@ void setup() {
   strip.show();
   
   Cycle *c = new Cycle(&tft, &strip);
-  modes[1] = c;
+  modes[0] = c;
   
   Bars *b = new Bars(&tft, &strip);
-  modes[0] = b;
+  modes[1] = b;
 
- 
-  
   Serial.begin(115200);
 
   tft.begin();
