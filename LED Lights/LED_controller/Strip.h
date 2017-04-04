@@ -88,7 +88,7 @@ H 308 n - 110 X
     strip.setPixelColor(lower, r, g, b, w);
    }
 }
-/*
+
 void setPixelColor(uint16_t n, uint32_t c) {
   uint8_t r = (uint8_t)(c >> 16);
   uint8_t g = (uint8_t)(c >>  8);
@@ -96,5 +96,5 @@ void setPixelColor(uint16_t n, uint32_t c) {
   uint8_t w = (uint8_t)(c >> 24);
   setPixelColor(n, r, g, b, w);
 }
-*/
+
 #endif //_STRIP_H

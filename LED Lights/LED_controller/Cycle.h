@@ -51,7 +51,7 @@ class Cycle : public Mode {
     void drawWhiteBar(int fill);
     void drawBar(int16_t x, int fill, uint16_t color);
 
-    //uint32_t Wheel(byte WheelPos);
+    uint32_t Wheel(byte WheelPos);
 
     int bar = 0;
     int red = 0;
@@ -143,6 +143,7 @@ void Cycle::draw() {
 }
 
 void Cycle::updateLEDs() {
+if (false) {
   c = (c + 1) % numPixels();
   //Serial.print("C:"); Serial.println(c);
   for(uint16_t n=0; n < numPixels(); ++n) {
@@ -152,35 +153,33 @@ void Cycle::updateLEDs() {
       setPixelColor(n, 0, 0, 0, 0);
     }
   }
-  show();
-  return;
- 
- /*
-  for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
-    for(i=0; i< strip->numPixels(); i++) {
-      strip->setPixelColor(i, Wheel(((i * 256 / strip->numPixels()) + j) & 255));
+} else {
+  c = (c + 1) % 256;
+  //for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
+    for(uint16_t i=0; i< numPixels(); i++) {
+      setPixelColor(i, Wheel(((i * 256 / numPixels()) + c) & 255));
     }
-    strip->show();
-    delay(5);
-  }
-  */
+    //delay(5);
+  //}
 }
-/*
+  show();
+}
+
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
 uint32_t Cycle::Wheel(byte WheelPos) {
   WheelPos = 255 - WheelPos;
   if(WheelPos < 85) {
-    return strip->Color(255 - WheelPos * 3, 0, WheelPos * 3,0);
+    return Color(255 - WheelPos * 3, 0, WheelPos * 3,0);
   }
   if(WheelPos < 170) {
     WheelPos -= 85;
-    return strip->Color(0, WheelPos * 3, 255 - WheelPos * 3,0);
+    return Color(0, WheelPos * 3, 255 - WheelPos * 3,0);
   }
   WheelPos -= 170;
-  return strip->Color(WheelPos * 3, 255 - WheelPos * 3, 0,0);
+  return Color(WheelPos * 3, 255 - WheelPos * 3, 0,0);
 }
-*/
+
 void Cycle::drawBarOutline(int bar) {
   tft->drawRect(REDBARX - BAROUTLINE, BARMINY - BAROUTLINE, BARWIDTH + BAROUTLINE + BAROUTLINE + BAROUTLINE + BAROUTLINE, BARMAXY - BARMINY + BAROUTLINE + BAROUTLINE, bar == 0 ? ILI9341_RED : ILI9341_BLACK);
   tft->drawRect(GREENBARX - BAROUTLINE, BARMINY - BAROUTLINE, BARWIDTH + BAROUTLINE + BAROUTLINE + BAROUTLINE + BAROUTLINE, BARMAXY - BARMINY + BAROUTLINE + BAROUTLINE, bar == 1 ? ILI9341_GREEN : ILI9341_BLACK);
