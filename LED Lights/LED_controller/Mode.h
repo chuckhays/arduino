@@ -8,7 +8,7 @@
 
 class Mode {
   public:
-    Mode(Adafruit_ILI9341* t, Strip* s);
+    Mode(Adafruit_ILI9341* t);
     virtual void load() = 0;
     virtual void processInput(int x, int y, int sw) = 0;
     virtual void draw() = 0;
@@ -17,12 +17,10 @@ class Mode {
     uint8_t scaleColor(uint8_t c, uint8_t brightness);
   protected:
     Adafruit_ILI9341* tft;
-    Strip* strip;
 };
 
-Mode::Mode(Adafruit_ILI9341* t, Strip* s) {
+Mode::Mode(Adafruit_ILI9341* t) {
   tft = t;
-  strip = s;
 }
 
 int Mode::coerceValue(int value) {

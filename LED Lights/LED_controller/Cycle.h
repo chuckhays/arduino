@@ -7,7 +7,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
 
-
 #define LINE1 3
 #define LINE2 23
 #define LINE3 43
@@ -32,7 +31,7 @@
 
 class Cycle : public Mode {
   public:
-    Cycle(Adafruit_ILI9341* t, Strip* s);
+    Cycle(Adafruit_ILI9341* t);
     void load();
     void processInput(int x, int y, int sw);
     void draw();
@@ -63,7 +62,7 @@ class Cycle : public Mode {
     int c = 0;
 };
 
-Cycle::Cycle(Adafruit_ILI9341* t, Strip* s) : Mode(t, s) {
+Cycle::Cycle(Adafruit_ILI9341* t) : Mode(t) {
   
 }
 
@@ -144,16 +143,16 @@ void Cycle::draw() {
 }
 
 void Cycle::updateLEDs() {
-  c = (c + 1) % strip->numPixels();
+  c = (c + 1) % numPixels();
   //Serial.print("C:"); Serial.println(c);
-  for(uint16_t n=0; n < strip->numPixels(); ++n) {
+  for(uint16_t n=0; n < numPixels(); ++n) {
     if (n == c) {
-      strip->setPixelColor(n, 0, 0, 0, 255);
+      setPixelColor(n, 0, 0, 0, 255);
     } else {
-      strip->setPixelColor(n, 0, 0, 0, 0);
+      setPixelColor(n, 0, 0, 0, 0);
     }
   }
-  strip->show();
+  show();
   return;
  
  /*
@@ -190,7 +189,7 @@ void Cycle::drawBarOutline(int bar) {
 }
 
 void Cycle::drawRedBar(int fill) {
-  drawBar(REDBARX, fill, ILI9341_RED);
+  drawBar(REDBARX, fill, ILI9341_PINK);
 }
 
 void Cycle::drawGreenBar(int fill) {

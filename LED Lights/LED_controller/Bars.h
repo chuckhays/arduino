@@ -30,7 +30,7 @@
 
 class Bars : public Mode {
   public:
-    Bars(Adafruit_ILI9341* t, Strip* s);
+    Bars(Adafruit_ILI9341* t);
     void load();
     void processInput(int x, int y, int sw);
     void draw();
@@ -57,7 +57,7 @@ class Bars : public Mode {
     int white = 255;
 };
 
-Bars::Bars(Adafruit_ILI9341* t, Strip* s) : Mode(t, s) {
+Bars::Bars(Adafruit_ILI9341* t) : Mode(t) {
   
 }
 
@@ -138,10 +138,10 @@ void Bars::draw() {
 }
 
 void Bars::updateLEDs() {
-  for(uint16_t n=0; n < strip->numPixels(); ++n) {
-    strip->setPixelColor(n, red, green, blue, white);
+  for(uint16_t n=0; n < numPixels(); ++n) {
+    setPixelColor(n, red, green, blue, white);
   }
-  strip->show();
+  show();
 }
 
 /*
