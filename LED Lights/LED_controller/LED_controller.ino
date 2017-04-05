@@ -17,10 +17,8 @@
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
-//#define PIN 12
 #define ENABLE_PIN 11
 
-//Strip strip = Strip(PIN);
 #define MODES 2
 Mode* modes[MODES];
 int currentMode = 0;
