@@ -7,7 +7,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
 
-
 #define LINE1 3
 #define LINE2 23
 #define LINE3 43
@@ -32,7 +31,7 @@
 
 class Cycle : public Mode {
   public:
-    Cycle(Adafruit_ILI9341* t, Strip* s);
+    Cycle(Adafruit_ILI9341* t);
     void load();
     void processInput(int x, int y, int sw);
     void draw();
@@ -59,9 +58,11 @@ class Cycle : public Mode {
     int green = 0;
     int blue = 0;
     int white = 255;
+
+    int c = 0;
 };
 
-Cycle::Cycle(Adafruit_ILI9341* t, Strip* s) : Mode(t, s) {
+Cycle::Cycle(Adafruit_ILI9341* t) : Mode(t) {
   
 }
 
@@ -74,7 +75,7 @@ void Cycle::load() {
   tft->setCursor(0, LINE2);
   tft->println("Y:");
   tft->setCursor(0, LINE3);
-  tft->println("S:");
+  tft->println("C:");
   drawRedOutline();
   drawGreenOutline();
   drawBlueOutline();
@@ -90,20 +91,13 @@ void Cycle::processInput(int x, int y, int sw) {
   }
   if (y < MINSIGNAL) {
     changeBarValue(-MAXSTEP);
-    x=0;
   } else if (y < STARTLOWSIGNAL) {
     changeBarValue(-(STARTLOWSIGNAL - y) * MAXSTEP / (STARTLOWSIGNAL - MINSIGNAL));
-    x=1;
   } else if (y > MAXSIGNAL) {
     changeBarValue(MAXSTEP);
-    x=2;
   } else if (y > STARTHIGHSIGNAL) {
     changeBarValue((y - STARTHIGHSIGNAL) * MAXSTEP / (MAXSIGNAL - STARTHIGHSIGNAL));
-    x=3;
-  } else {
-    x = 4;
   }
-  x=red;
 
   tft->fillRect(TEXTX, LINE1, 50, 60, ILI9341_BLACK);
   tft->setCursor(TEXTX, LINE1);
@@ -113,7 +107,7 @@ void Cycle::processInput(int x, int y, int sw) {
   tft->setCursor(TEXTX, LINE2);
   tft->println(y);
   tft->setCursor(TEXTX, LINE3);
-  tft->println(sw);
+  tft->println(c);
 }
 
 void Cycle::changeBar(int diff) {
@@ -126,13 +120,7 @@ void Cycle::changeBar(int diff) {
 void Cycle::changeBarValue(int diff) {
   switch (bar) {
     case 0:
-    Serial.print("diff:");
-    Serial.print(diff);
-    Serial.print(" red:");
-    Serial.print(red);
       red = coerceValue(red + diff);
-      Serial.print(" new red:");
-      Serial.println(red);
       break;
     case 1:
       green = coerceValue(green + diff);
@@ -155,27 +143,26 @@ void Cycle::draw() {
 }
 
 void Cycle::updateLEDs() {
- uint16_t i, j;
-
-for(i=0; i < strip->numPixels(); ++i) {
-for(j=0; j<strip->numPixels(); ++j) {
-  if (j == i) {
-    strip->setPixelColor(j, 0, 0, 0, 255);
-  } else {
-    strip->setPixelColor(j, 255, 0, 0, 0);
-  }
-  delay(5);
-}
-}
- /*
-  for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
-    for(i=0; i< strip->numPixels(); i++) {
-      strip->setPixelColor(i, Wheel(((i * 256 / strip->numPixels()) + j) & 255));
+if (false) {
+  c = (c + 1) % numPixels();
+  //Serial.print("C:"); Serial.println(c);
+  for(uint16_t n=0; n < numPixels(); ++n) {
+    if (n == c) {
+      setPixelColor(n, 0, 0, 0, 255);
+    } else {
+      setPixelColor(n, 0, 0, 0, 0);
     }
-    strip->show();
-    delay(5);
   }
-  */
+} else {
+  c = (c + 1) % 256;
+  //for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
+    for(uint16_t i=0; i< numPixels(); i++) {
+      setPixelColor(i, Wheel(((i * 256 / numPixels()) + c) & 255));
+    }
+    //delay(5);
+  //}
+}
+  show();
 }
 
 // Input a value 0 to 255 to get a color value.
@@ -183,14 +170,14 @@ for(j=0; j<strip->numPixels(); ++j) {
 uint32_t Cycle::Wheel(byte WheelPos) {
   WheelPos = 255 - WheelPos;
   if(WheelPos < 85) {
-    return strip->Color(255 - WheelPos * 3, 0, WheelPos * 3,0);
+    return Color(255 - WheelPos * 3, 0, WheelPos * 3,0);
   }
   if(WheelPos < 170) {
     WheelPos -= 85;
-    return strip->Color(0, WheelPos * 3, 255 - WheelPos * 3,0);
+    return Color(0, WheelPos * 3, 255 - WheelPos * 3,0);
   }
   WheelPos -= 170;
-  return strip->Color(WheelPos * 3, 255 - WheelPos * 3, 0,0);
+  return Color(WheelPos * 3, 255 - WheelPos * 3, 0,0);
 }
 
 void Cycle::drawBarOutline(int bar) {
@@ -201,7 +188,7 @@ void Cycle::drawBarOutline(int bar) {
 }
 
 void Cycle::drawRedBar(int fill) {
-  drawBar(REDBARX, fill, ILI9341_BLUE);
+  drawBar(REDBARX, fill, ILI9341_PINK);
 }
 
 void Cycle::drawGreenBar(int fill) {

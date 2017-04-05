@@ -22,7 +22,6 @@
 #define BARMAXY 310
 #define BARMINY 10
 
-
 #define STARTLOWSIGNAL 412
 #define STARTHIGHSIGNAL 612
 #define MAXSIGNAL 924
@@ -31,7 +30,7 @@
 
 class Bars : public Mode {
   public:
-    Bars(Adafruit_ILI9341* t, Strip* s);
+    Bars(Adafruit_ILI9341* t);
     void load();
     void processInput(int x, int y, int sw);
     void draw();
@@ -58,7 +57,7 @@ class Bars : public Mode {
     int white = 255;
 };
 
-Bars::Bars(Adafruit_ILI9341* t, Strip* s) : Mode(t, s) {
+Bars::Bars(Adafruit_ILI9341* t) : Mode(t) {
   
 }
 
@@ -87,20 +86,13 @@ void Bars::processInput(int x, int y, int sw) {
   }
   if (y < MINSIGNAL) {
     changeBarValue(-MAXSTEP);
-    x=0;
   } else if (y < STARTLOWSIGNAL) {
     changeBarValue(-(STARTLOWSIGNAL - y) * MAXSTEP / (STARTLOWSIGNAL - MINSIGNAL));
-    x=1;
   } else if (y > MAXSIGNAL) {
     changeBarValue(MAXSTEP);
-    x=2;
   } else if (y > STARTHIGHSIGNAL) {
     changeBarValue((y - STARTHIGHSIGNAL) * MAXSTEP / (MAXSIGNAL - STARTHIGHSIGNAL));
-    x=3;
-  } else {
-    x = 4;
   }
-  x=red;
 
   tft->fillRect(TEXTX, LINE1, 50, 60, ILI9341_BLACK);
   tft->setCursor(TEXTX, LINE1);
@@ -146,10 +138,10 @@ void Bars::draw() {
 }
 
 void Bars::updateLEDs() {
-  for(uint16_t n=0; n < strip->numPixels(); ++n) {
-    strip->setPixelColor(n, red, green, blue, white);
+  for(uint16_t n=0; n < numPixels(); ++n) {
+    setPixelColor(n, red, green, blue, white);
   }
-  strip->show();
+  show();
 }
 
 /*

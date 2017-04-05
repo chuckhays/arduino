@@ -2,9 +2,9 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
 
+#include "Strip.h"
 #include "Bars.h"
 #include "Cycle.h"
-#include "Strip.h"
 
 #define STMPE_CS 6
 #define TFT_CS   9
@@ -17,10 +17,10 @@
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
-#define PIN 12
+//#define PIN 12
 #define ENABLE_PIN 11
 
-Strip strip = Strip(PIN);
+//Strip strip = Strip(PIN);
 #define MODES 2
 Mode* modes[MODES];
 int currentMode = 0;
@@ -34,22 +34,24 @@ int white = 255;
 void setup() {
   pinMode(ENABLE_PIN, OUTPUT);
   digitalWrite(ENABLE_PIN, HIGH);
-  for(uint16_t n=0; n < strip.numPixels(); ++n) {
-    strip.setPixelColor(n, 0, 0, 0, 255);
+  setupStrip();
+  for(uint16_t n=0; n < numPixels(); ++n) {
+    setPixelColor(n, 0, 0, 0, 255);
   }
-  strip.show();
-  Bars *b = new Bars(&tft, &strip);
-  modes[0] = b;
-
-  Cycle *c = new Cycle(&tft, &strip);
-  modes[1] = c;
+  show();
   
+  Cycle *c = new Cycle(&tft);
+  modes[0] = c;
+  
+  Bars *b = new Bars(&tft);
+  modes[1] = b;
+
   Serial.begin(115200);
 
   tft.begin();
   tft.setRotation(2);
   tft.fillScreen(ILI9341_BLACK);
-  b->load();
+  modes[currentMode]->load();
 }
 
 void loop(void) {
