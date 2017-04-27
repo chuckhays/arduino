@@ -28,6 +28,7 @@
 Bars::Bars(Adafruit_ILI9341* t) : Mode(t) {}
 
 void Bars::load() {
+  /*
   tft->fillScreen(ILI9341_BLACK);
   tft->setCursor(0, LINE1);
   tft->setTextColor(ILI9341_GREEN);
@@ -41,6 +42,7 @@ void Bars::load() {
   drawGreenOutline();
   drawBlueOutline();
   drawWhiteOutline();
+  */
 }
 
 void Bars::processInput(int x, int y, int sw) {
@@ -92,6 +94,11 @@ void Bars::changeBarValue(int diff) {
       white = coerceValue(white + diff);
       break;
   }
+}
+
+
+void Bars::drawRect(int x, int y, int w, int h) {
+  tft->fillRect(x, y, w, h, ILI9341_RED);
 }
 
 void Bars::draw() {

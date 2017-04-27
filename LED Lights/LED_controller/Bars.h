@@ -10,6 +10,7 @@ class Bars : public Mode {
     Bars(Adafruit_ILI9341* t);
     void load();
     void processInput(int x, int y, int sw);
+    void drawRect(int x, int y, int w, int h);
     void draw();
     void updateLEDs();
 

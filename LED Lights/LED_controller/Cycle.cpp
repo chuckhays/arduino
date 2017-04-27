@@ -29,6 +29,7 @@
 Cycle::Cycle(Adafruit_ILI9341* t) : Mode(t) {}
 
 void Cycle::load() {
+  /*
   tft->fillScreen(ILI9341_BLACK);
   tft->setCursor(0, LINE1);
   tft->setTextColor(ILI9341_GREEN);
@@ -42,7 +43,7 @@ void Cycle::load() {
   drawGreenOutline();
   drawBlueOutline();
   drawWhiteOutline();
-  
+  */
 }
 
 void Cycle::processInput(int x, int y, int sw) {
@@ -96,6 +97,18 @@ void Cycle::changeBarValue(int diff) {
   }
 }
 
+void Cycle::drawRect(int x, int y, int w, int h) {
+  c = (c + 1) % 256;
+  for (uint16_t i=0; i<w; ++i) {
+    uint32_t color = Wheel(((i * 256 / 100) + c) & 255);
+    uint8_t r = (uint8_t)(color >> 16);
+    uint8_t g = (uint8_t)(color >>  8);
+    uint8_t b = (uint8_t)color;
+    uint16_t fill = tft->color565(r, g, b);
+    tft->fillRect(x + i, y, 1, h, fill);
+  }  
+}
+
 void Cycle::draw() {
   drawRedBar(red);
   drawGreenBar(green);
@@ -116,7 +129,7 @@ if (false) {
     }
   }
 } else {
-  c = (c + 1) % 256;
+  //c = (c + 1) % 256;
   //for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
     for(uint16_t i=0; i< numPixels(); i++) {
       setPixelColor(i, Wheel(((i * 256 / numPixels()) + c) & 255));
