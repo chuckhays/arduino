@@ -10,7 +10,7 @@
 
 #define NUM_LEDS 18
 
-#define BRIGHTNESS 50
+#define BRIGHTNESS 255
 
 #define RED 0x1
 #define YELLOW 0x3
@@ -19,6 +19,8 @@
 #define BLUE 0x4
 #define VIOLET 0x5
 #define WHITE 0x7
+
+#define TIMEPER 10000
 
 Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRBW + NEO_KHZ800);
@@ -41,6 +43,11 @@ int gamma[] = {
   177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 
+uint8_t reds[NUM_LEDS];
+uint8_t blues[NUM_LEDS];
+uint8_t greens[NUM_LEDS];
+uint8_t whites[NUM_LEDS];
+unsigned long times[NUM_LEDS];
 
 void setup() {
   Serial.begin(115200);
@@ -85,37 +92,20 @@ void loop() {
     }
   }
 
-  // Candy cane cycle.
-  candyCycle(10);
-  // Rainbow.
-  rainbow(20);
-  // Twinkle.
-  
-  // Chase.
-  theaterChase(strip.Color(0,0,0,255), 65);
   // Rainbow cycle.
   rainbowCycle(10);
   // Red/white/green wipe.
   redwhitegreenwipe();
-  
-  
-  /*
-  // Some example procedures showing how to display to the pixels:
-  colorWipe(strip.Color(255, 0, 0), 500); // Red
-  colorWipe(strip.Color(0, 255, 0), 500); // Green
-  colorWipe(strip.Color(0, 0, 255), 500); // Blue
-  colorWipe(strip.Color(0, 0, 0, 255), 500); // White
-
-  whiteOverRainbow(20,75,5);  
-
-  pulseWhite(5); 
-
-  // fullWhite();
-  // delay(2000);
-
-  rainbowFade2White(3,3,1);
-*/
-
+  // Candy cane cycle.
+  candyCycle(5);
+  // Rainbow.
+  rainbow(20);
+  // Twinkle.
+  twinkle();
+  // Chase.
+  theaterChase(strip.Color(0,0,0,255), 65);
+  // Cylon.
+  cylon();
 }
 
 // 12 13 14 15 16 17
@@ -128,12 +118,101 @@ void setPixel(uint8_t i, uint32_t c) {
   strip.setPixelColor(11-i, c);
 }
 
+void clearAll() {
+  for(uint8_t j = 0; j < 6; ++j) {
+    setPixel(j, strip.Color(0,0,0,0));
+  }
+}
+
+void cylon() {
+  unsigned long current = millis();
+  unsigned long endTime = current + TIMEPER;
+  while((current = millis()) < endTime) {
+    for(uint8_t i = 0; i < 10; ++i) {
+     uint8_t active = i;
+     if (active >= 6) {
+       active = 10 - active;
+     }
+     for(uint8_t j = 0; j < 6; ++j) {
+       if (j == active) {
+         setPixel(j, strip.Color(255,0,0,0));
+       } else {
+         setPixel(j, strip.Color(0,0,0,0));
+       }
+     }
+     strip.show();
+     delay(100);
+    }
+  }
+}
+
+#define DECAYTIME 200
+#define MINTIME 250
+#define MAXTIME 1000
+
+void twinkle() {
+  for(uint8_t i; i < NUM_LEDS; ++i) {
+    reds[i] = 0;
+    blues[i] = 0;
+    greens[i] = 0;
+    whites[i] = 0;
+    times[i] = 0;
+  }
+
+  unsigned long current = millis();
+  unsigned long endTime = current + TIMEPER;
+  while ((current = millis()) < endTime) {
+    if (random(100) == 1) {
+      
+      // Add a new color.
+      uint8_t p = random(NUM_LEDS);
+      if (random(5) == 1) {
+        // White.
+        reds[p] = blues[p] = greens[p] = 0;
+        whites[p] = random(256);
+      } else {
+        // Color.
+        whites[p] = 0;
+        uint32_t c = Wheel(random(256));
+        reds[p] = red(c);
+        greens[p] = green(c);
+        blues[p] = blue(c);
+      }
+      times[p] = random(MINTIME, MAXTIME) + current;
+    }
+    
+    // Update all LEDS.
+    for(uint8_t j = 0; j < NUM_LEDS; ++j) {
+      long delta = times[j] - current;
+      uint8_t r = reds[j];
+      uint8_t g = greens[j];
+      uint8_t b = blues[j];
+      uint8_t w = whites[j];
+      if (delta <= 0 ) {
+        r = g = b = w = 0;
+      } else if (delta < DECAYTIME) {
+        // Scale by how close to 0.
+        float scale = ((float)delta) / ((float)DECAYTIME);
+        r = r * scale;
+        g = g * scale;
+        b = b * scale;
+        w = w * scale;
+      }
+      strip.setPixelColor(j, strip.Color(r, g, b, w));
+    }
+    strip.show();
+  }
+}
+
 void redwhitegreenwipe() {
+  clearAll();
   uint8_t wait = 100;
   uint32_t red = strip.Color(255, 0, 0);
   uint32_t green = strip.Color(0, 255, 0);
   uint32_t white = strip.Color(0, 0, 0, 255);
-  for(uint8_t count = 0; count < 3; ++count) {
+  unsigned long current = millis();
+  unsigned long endTime = current + TIMEPER;
+  while ((current = millis()) < endTime) {
     // Wipe each set through each color.
     for(uint8_t i = 0; i < 6; ++i) {
       setPixel(i, red);
@@ -154,7 +233,9 @@ void redwhitegreenwipe() {
 }
 
 void theaterChase(uint32_t c, uint8_t wait) {
-  for (int j=0; j<30; j++) {  //do 10 cycles of chasing
+  unsigned long current = millis();
+  unsigned long endTime = current + TIMEPER;
+  while ((current = millis()) < endTime) {
     for (int q=0; q < 3; q++) {
       for (uint16_t i=0; i < 6; i=i+3) {
         setPixel(i+q, c);    //turn every third pixel on
@@ -177,145 +258,6 @@ void colorWipe(uint32_t c, uint8_t wait) {
     strip.show();
     delay(wait);
   }
-}
-
-void pulseWhite(uint8_t wait) {
-  for(int j = 0; j < 256 ; j++){
-      for(uint16_t i=0; i<strip.numPixels(); i++) {
-          strip.setPixelColor(i, strip.Color(0,0,0, gamma[j] ) );
-        }
-        delay(wait);
-        strip.show();
-      }
-
-  for(int j = 255; j >= 0 ; j--){
-      for(uint16_t i=0; i<strip.numPixels(); i++) {
-          strip.setPixelColor(i, strip.Color(0,0,0, gamma[j] ) );
-        }
-        delay(wait);
-        strip.show();
-      }
-}
-
-
-void rainbowFade2White(uint8_t wait, int rainbowLoops, int whiteLoops) {
-  float fadeMax = 100.0;
-  int fadeVal = 0;
-  uint32_t wheelVal;
-  int redVal, greenVal, blueVal;
-
-  for(int k = 0 ; k < rainbowLoops ; k ++){
-    
-    for(int j=0; j<256; j++) { // 5 cycles of all colors on wheel
-
-      for(int i=0; i< strip.numPixels(); i++) {
-
-        wheelVal = Wheel(((i * 256 / strip.numPixels()) + j) & 255);
-
-        redVal = red(wheelVal) * float(fadeVal/fadeMax);
-        greenVal = green(wheelVal) * float(fadeVal/fadeMax);
-        blueVal = blue(wheelVal) * float(fadeVal/fadeMax);
-
-        strip.setPixelColor( i, strip.Color( redVal, greenVal, blueVal ) );
-
-      }
-
-      //First loop, fade in!
-      if(k == 0 && fadeVal < fadeMax-1) {
-          fadeVal++;
-      }
-
-      //Last loop, fade out!
-      else if(k == rainbowLoops - 1 && j > 255 - fadeMax ){
-          fadeVal--;
-      }
-
-        strip.show();
-        delay(wait);
-    }
-  
-  }
-
-
-
-  delay(500);
-
-
-  for(int k = 0 ; k < whiteLoops ; k ++){
-
-    for(int j = 0; j < 256 ; j++){
-
-        for(uint16_t i=0; i < strip.numPixels(); i++) {
-            strip.setPixelColor(i, strip.Color(0,0,0, gamma[j] ) );
-          }
-          strip.show();
-        }
-
-        delay(2000);
-    for(int j = 255; j >= 0 ; j--){
-
-        for(uint16_t i=0; i < strip.numPixels(); i++) {
-            strip.setPixelColor(i, strip.Color(0,0,0, gamma[j] ) );
-          }
-          strip.show();
-        }
-  }
-
-  delay(500);
-
-
-}
-
-void whiteOverRainbow(uint8_t wait, uint8_t whiteSpeed, uint8_t whiteLength ) {
-  
-  if(whiteLength >= strip.numPixels()) whiteLength = strip.numPixels() - 1;
-
-  int head = whiteLength - 1;
-  int tail = 0;
-
-  int loops = 3;
-  int loopNum = 0;
-
-  static unsigned long lastTime = 0;
-
-
-  while(true){
-    for(int j=0; j<256; j++) {
-      for(uint16_t i=0; i<strip.numPixels(); i++) {
-        if((i >= tail && i <= head) || (tail > head && i >= tail) || (tail > head && i <= head) ){
-          strip.setPixelColor(i, strip.Color(0,0,0, 255 ) );
-        }
-        else{
-          strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
-        }
-        
-      }
-
-      if(millis() - lastTime > whiteSpeed) {
-        head++;
-        tail++;
-        if(head == strip.numPixels()){
-          loopNum++;
-        }
-        lastTime = millis();
-      }
-
-      if(loopNum == loops) return;
-    
-      head%=strip.numPixels();
-      tail%=strip.numPixels();
-        strip.show();
-        delay(wait);
-    }
-  }
-  
-}
-void fullWhite() {
-  
-    for(uint16_t i=0; i<strip.numPixels(); i++) {
-        strip.setPixelColor(i, strip.Color(0,0,0, 255 ) );
-    }
-      strip.show();
 }
 
 
@@ -347,7 +289,7 @@ void candyCycle(uint8_t wait) {
 void rainbow(uint8_t wait) {
   uint16_t i, j;
 
-  for(j=0; j<256; j++) {
+  for(j=0; j<256 * 2; j++) {
     for(i=0; i<strip.numPixels(); i++) {
       strip.setPixelColor(i, Wheel((i+j) & 255));
     }
