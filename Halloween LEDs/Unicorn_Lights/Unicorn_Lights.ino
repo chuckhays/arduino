@@ -59,6 +59,21 @@ void loop() {
 // Tower should be 0 or 1.
 void setRowColor(uint8_t row, uint8_t tower, uint32_t color) {
 
+  // Example syntax:
+  // if (row < 7) {
+  //
+  // }
+  // for (uint8_t i = 0; i < 3; ++i) {
+  //
+  // }
+  // if (row == 7) {
+  //
+  // }
+  // To set colors:
+  // strip.setPixelColor(INDEX, color);
+}
+}
+
 }
 
 // Set color for a logical row(0-7) on both towers at once.
