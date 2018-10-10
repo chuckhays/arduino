@@ -46,19 +46,23 @@ void loop() {
 // 1 12 15     23 34 37
 // 0 13 14     22 35 36
 
-// Tower 0 : Row [0-6] = Index, 13 - Index, Index + 14
-// Tower 1 : Row [0-6] = 22+ Index, 22 + 13 - Index, 22 + Index + 14
-// Tower 0: Row 7 = Index + 14 (or just 21)
-// Tower 0: Row 7 = 22 + Index + 14 (or just 43)
-
+// Tower 0 : Row [0-6] = Row, 13 - Row, Row + 14
+// Tower 1 : Row [0-6] = 22+ Row, 22 + 13 - Row, 22 + Row + 14
+// Tower 0: Row 7 = Row + 14 (or just 21)
+// Tower 1: Row 7 = 22 + Row + 14 (or just 43)
+//
 // 0::6 means iterate in a loop for each number 0 through 6
 // Tower 0: Column [0-2] = Column * 7 + (0::6)
-// Tower 1: Colun [0-2] = 22 + Column * 7 + (0::6)
+// Tower 1: Column [0-2] = 22 + Column * 7 + (0::6)
 
 // Set color for a logical row (0-7), will set all 3 LEDs (or single for top).
 // Tower should be 0 or 1.
-void setRowColor(uint8_t row, uint8_t tower, uint32_t color) {
-
+void setRowColor(uint8_t row, uint8_t tower, uint32_t color {
+  if (row <= 7) {
+    strip.setPixelColor(Index, 0, green);
+  }
+  strip.show();
+}
   // Example syntax:
   // if (row < 7) {
   //
@@ -78,7 +82,10 @@ void setRowColor(uint8_t row, uint8_t tower, uint32_t color) {
 
 // Set color for a logical row(0-7) on both towers at once.
 void setRowColor(uint8_t row, uint32_t color) {
-
+  if (row <= 7){
+  strip.setPixelColor(((Index),(22 + Index)), purple)
+}
+strip.show();
 }
 
 // Set color for a column with column (0-2), will set the entire column.
