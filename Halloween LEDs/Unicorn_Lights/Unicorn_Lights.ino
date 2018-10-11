@@ -70,7 +70,7 @@ void setRowColor(uint8_t row, uint8_t tower, uint32_t color) {
   if (tower == 1) {
     if (row < 7) {
       strip.setPixelColor(22 + row, color);
-      strip.setPixelColor((22 + 3 - row), color);
+      strip.setPixelColor((22 + 13 - row), color);
       strip.setPixelColor((22 + row + 14), color);
     } else if (row == 7) {
       strip.setPixelColor(43, color);
