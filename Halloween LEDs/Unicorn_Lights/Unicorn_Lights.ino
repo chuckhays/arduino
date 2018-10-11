@@ -88,12 +88,25 @@ void setRowColor(uint8_t row, uint32_t color) {
 // Set color for a column with column (0-2), will set the entire column.
 // Tower should be 0 or 1.
 void setColumnColor(uint8_t column, uint8_t tower, uint32_t color) {
-
-}
+  if (tower == 0) {
+    for (uint8_t i=0; i<7; i++) {
+      strip.setPixelColor((column * 7 + i), color);
+      }
+    } else if (tower == 1) {
+      for (uint8_t i=0; i<7; i++) {
+        strip.setPixelColor((22 + column * 7 + i), color);
+        }
+      }
+      else {
+        strip.setPixelColor(21, color);
+        strip.setPixelColor(43, color);
+      }
+  }
 
 // Set color for a column with column (0-2) on both towers at once.
 void setColumnColor(uint8_t column, uint32_t color) {
-
+  setColumnColor(column, 0, color);
+  setColumnColor(column, 1, color);
 }
 
 // Input a value 0 to 255 to get a color value.
