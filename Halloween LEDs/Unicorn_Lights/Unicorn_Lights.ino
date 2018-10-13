@@ -2,15 +2,17 @@
 
 #define PIN 6
 
-#define NUM_LEDS 22
+#define NUM_LEDS 44
 
-#define BRIGHTNESS 50
+#define BRIGHTNESS 255
 
 #define POTPIN A5
 #define LEDPIN 5
 #define SWITCHPIN 9
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRBW + NEO_KHZ800);
+
+byte current = 0;
 
 void setup() {
   pinMode(LEDPIN, OUTPUT); // Set switch LED pin to output.
@@ -25,15 +27,20 @@ void loop() {
   int sensorValue = analogRead(POTPIN) / 4;
   analogWrite(LEDPIN, sensorValue);
   if (switchVal) {
-    for(uint16_t i=0; i<strip.numPixels(); i++) {
-      strip.setPixelColor(i, Wheel(sensorValue));
+    for(uint16_t i=0; i <= 7; i++) {
+      uint32_t color = Wheel(((i * 36) + current) & 255);
+      setRowColor(i, color);
     }
   } else {
-    for(uint16_t i=0; i<strip.numPixels(); i++) {
-      strip.setPixelColor(i, strip.Color(0,0,0,255));
+    for(uint16_t i=0; i <= 2; i++) {
+      uint32_t color = Wheel(((i * 85) + current) & 255);
+      setColumnColor(i, color);
+      setRowColor(7, strip.Color(0,0,0,0));
     }
   }
   strip.show();
+  delay(sensorValue/4);
+  ++current;
 }
 
 // Top
