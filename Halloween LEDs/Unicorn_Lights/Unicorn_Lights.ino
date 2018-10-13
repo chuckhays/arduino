@@ -58,23 +58,12 @@ void loop() {
 // Set color for a logical row (0-7), will set all 3 LEDs (or single for top).
 // Tower should be 0 or 1.
 void setRowColor(uint8_t row, uint8_t tower, uint32_t color) {
-  if (tower == 0) {
-    if (row < 7) {
-      strip.setPixelColor(row, color);
-      strip.setPixelColor((13 - row), color);
-      strip.setPixelColor((row + 14), color);
-    } else if (row == 7) {
-      strip.setPixelColor(21, color);
-    }
-  }
-  if (tower == 1) {
-    if (row < 7) {
-      strip.setPixelColor(22 + row, color);
-      strip.setPixelColor((22 + 13 - row), color);
-      strip.setPixelColor((22 + row + 14), color);
-    } else if (row == 7) {
-      strip.setPixelColor(43, color);
-    }
+  if (row < 7 ) {
+    strip.setPixelColor(tower * 22 + row, color);
+    strip.setPixelColor(tower * 22 + 13 - row, color);
+    strip.setPixelColor(tower * 22 + row + 14, color);
+  } else {
+    strip.setPixelColor(tower * 22 + 21, color);
   }
 }
 
@@ -88,20 +77,10 @@ void setRowColor(uint8_t row, uint32_t color) {
 // Set color for a column with column (0-2), will set the entire column.
 // Tower should be 0 or 1.
 void setColumnColor(uint8_t column, uint8_t tower, uint32_t color) {
-  if (tower == 0) {
-    for (uint8_t i=0; i<7; i++) {
-      strip.setPixelColor((column * 7 + i), color);
-      }
-    } else if (tower == 1) {
-      for (uint8_t i=0; i<7; i++) {
-        strip.setPixelColor((22 + column * 7 + i), color);
-        }
-      }
-      else {
-        strip.setPixelColor(21, color);
-        strip.setPixelColor(43, color);
-      }
+  for (uint8_t i=0; i<7; i++) {
+    strip.setPixelColor(tower * 22 + column * 7 + i, color);
   }
+}
 
 // Set color for a column with column (0-2) on both towers at once.
 void setColumnColor(uint8_t column, uint32_t color) {
