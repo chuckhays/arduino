@@ -10,7 +10,7 @@
 #define LEDPIN 5
 #define SWITCHPIN 9
 
-#define PATTERNS_COUNT 3
+#define PATTERNS_COUNT 4
 
 #define BUTTON_PRESS_DELAY 150
 
@@ -44,6 +44,9 @@ void loop() {
       break;
     case 2:
       orange();
+      break;
+    case 3:
+      strobe();
       break;
       
   }
@@ -80,6 +83,23 @@ void orange() {
     setRowColor(7 - i, color);
   }
   ++currentOrange;
+}
+
+byte currentStrobe = 0;
+void strobe() {
+  uint32_t color = strip.Color(255,255,255,255);
+  uint32_t off = strip.Color(0,0,0,0);
+  for(uint16_t i=0; i <= 7; i++) {
+    if (currentStrobe < 5) {
+      setRowColor(i, color);
+    } else {
+      setRowColor(i, off);
+    }
+  }
+  currentStrobe += 10;
+  if (currentStrobe > 240) {
+    currentStrobe = 0;
+  }
 }
 
 // Top
