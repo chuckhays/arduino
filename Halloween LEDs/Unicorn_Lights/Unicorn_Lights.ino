@@ -10,7 +10,7 @@
 #define LEDPIN 5
 #define SWITCHPIN 9
 
-#define PATTERNS_COUNT 2
+#define PATTERNS_COUNT 3
 
 #define BUTTON_PRESS_DELAY 150
 
@@ -42,6 +42,10 @@ void loop() {
     case 1:
       alternateRainbow();
       break;
+    case 2:
+      orange();
+      break;
+      
   }
   strip.show();
   int sensorValue = analogRead(POTPIN) / 4;
@@ -66,6 +70,16 @@ void alternateRainbow() {
       setRowColor(7, strip.Color(0,0,0,0));
     }
     ++currentAlternateRainbowColor;
+}
+
+byte currentOrange = 0;
+void orange() {
+  for(uint16_t i=0; i <= 7; i++) {
+    uint8_t wheelPos = ((i * 36) + currentOrange) & 255;
+    uint32_t color = orangeWheel(wheelPos);
+    setRowColor(7 - i, color);
+  }
+  ++currentOrange;
 }
 
 // Top
@@ -133,6 +147,15 @@ uint32_t Wheel(byte WheelPos) {
   }
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0,0);
+}
+
+uint32_t orangeWheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 126) {
+    return strip.Color(255, WheelPos ,0);
+  }
+  WheelPos -= 126;
+  return strip.Color(255, 129 - WheelPos , 0);
 }
 
 uint8_t red(uint32_t c) {
