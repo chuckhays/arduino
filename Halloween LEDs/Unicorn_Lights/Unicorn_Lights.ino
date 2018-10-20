@@ -10,9 +10,17 @@
 #define LEDPIN 5
 #define SWITCHPIN 9
 
+#define PATTERNS_COUNT 2
+
+#define BUTTON_PRESS_DELAY 250
+
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRBW + NEO_KHZ800);
 
-byte current = 0;
+uint8_t current_pattern = 0;
+unsigned long last_press_start_time = 0;
+bool switch_pressed = false;
+bool switch_press_recorded = false;
+
 
 void setup() {
   pinMode(LEDPIN, OUTPUT); // Set switch LED pin to output.
@@ -23,24 +31,41 @@ void setup() {
 }
 
 void loop() {
-  int switchVal = digitalRead(SWITCHPIN);
+  // First, check if the switch is pressed.
+  checkForSwitchPress();
+
+  // Next, decide which pattern we are currently showing and run it.
+  switch (current_pattern) {
+    case 0:
+      rainbow();
+      break;
+    case 1:
+      alternateRainbow();
+      break;
+  }
+  strip.show();
   int sensorValue = analogRead(POTPIN) / 4;
+  delay(sensorValue/4);
   analogWrite(LEDPIN, sensorValue);
-  if (switchVal) {
-    for(uint16_t i=0; i <= 7; i++) {
-      uint32_t color = Wheel(((i * 36) + current) & 255);
+}
+
+byte currentRainbowColor = 0;
+void rainbow() {
+  for(uint16_t i=0; i <= 7; i++) {
+      uint32_t color = Wheel(((i * 36) + currentRainbowColor) & 255);
       setRowColor(i, color);
     }
-  } else {
-    for(uint16_t i=0; i <= 2; i++) {
-      uint32_t color = Wheel(((i * 85) + current) & 255);
+    ++currentRainbowColor;
+}
+
+byte currentAlternateRainbowColor = 0;
+void alternateRainbow() {
+  for(uint16_t i=0; i <= 2; i++) {
+      uint32_t color = Wheel(((i * 85) + currentAlternateRainbowColor) & 255);
       setColumnColor(i, color);
       setRowColor(7, strip.Color(0,0,0,0));
     }
-  }
-  strip.show();
-  delay(sensorValue/4);
-  ++current;
+    ++currentAlternateRainbowColor;
 }
 
 // Top
@@ -118,4 +143,32 @@ uint8_t green(uint32_t c) {
 }
 uint8_t blue(uint32_t c) {
   return (c);
+}
+
+void checkForSwitchPress() {
+  // Check if the button is pressed.
+  uint8_t switchVal = digitalRead(SWITCHPIN);
+  // A value of 0 means it is pressed.
+  if (switchVal) {
+    // Button is not pressed.
+    switch_pressed = false;
+    switch_press_recorded = false;
+  } else {
+    if (switch_press_recorded) {
+      // We already processed this switch press, don't do anything until the button is released.
+      return;
+    }
+    // Button is pressed.
+    if (switch_pressed) {
+      // Button was pressed last time, check if it has been pressed long enough to advance.
+      if (millis() - last_press_start_time > BUTTON_PRESS_DELAY) {
+        // Button was held long enough to qualify as a press.
+        current_pattern = (current_pattern + 1 ) % PATTERNS_COUNT;
+      }
+    } else {
+      // Button was not pressed last loop, record the time.
+      switch_pressed = true;
+      last_press_start_time = millis();
+    }
+  }
 }
