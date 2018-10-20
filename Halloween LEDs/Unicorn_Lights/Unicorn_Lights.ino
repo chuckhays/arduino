@@ -12,7 +12,7 @@
 
 #define PATTERNS_COUNT 2
 
-#define BUTTON_PRESS_DELAY 250
+#define BUTTON_PRESS_DELAY 150
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRBW + NEO_KHZ800);
 
@@ -164,6 +164,7 @@ void checkForSwitchPress() {
       if (millis() - last_press_start_time > BUTTON_PRESS_DELAY) {
         // Button was held long enough to qualify as a press.
         current_pattern = (current_pattern + 1 ) % PATTERNS_COUNT;
+        switch_press_recorded = true;
       }
     } else {
       // Button was not pressed last loop, record the time.
