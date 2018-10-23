@@ -10,7 +10,7 @@
 #define LEDPIN 5
 #define SWITCHPIN 9
 
-#define PATTERNS_COUNT 6
+#define PATTERNS_COUNT 7
 
 #define BUTTON_PRESS_DELAY 150
 
@@ -57,6 +57,9 @@ void loop() {
       break;
     case 5:
       pause = strobe(0);
+      break;
+    case 6:
+      pause = fire();
       break;
       
   }
@@ -121,6 +124,23 @@ uint16_t strobe(uint16_t sensor) {
   }
   currentStrobe = (currentStrobe + 1) % 2;
   return 30 + 30 * currentStrobe;
+}
+
+uint16_t fire() {
+  int r = 255;
+  int g = 125;
+  int b = 12;
+  for(uint16_t i = 0; i <= 7; ++i) {
+    int flicker = random(0,40);
+    int r1 = r-random(0,40);
+    int g1 = g-random(0,40);
+    int b1 = b-random(0,40);
+    if (r1 < 0) { r1 = 0; }
+    if (b1 < 0) { b1 = 0; }
+    if (g1 < 0) { g1 = 0; }
+    setRowColor(i, strip.Color(r1, g1, b1));
+  }
+  return random(50, 150);
 }
 
 // Top
