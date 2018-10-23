@@ -10,7 +10,7 @@
 #define LEDPIN 5
 #define SWITCHPIN 9
 
-#define PATTERNS_COUNT 5
+#define PATTERNS_COUNT 6
 
 #define BUTTON_PRESS_DELAY 150
 
@@ -47,12 +47,15 @@ void loop() {
       pause = alternateRainbow();
       break;
     case 2:
-      pause = orange();
+      pause = purple();
       break;
     case 3:
-      pause = strobe(sensorValue);
+      pause = orange();
       break;
     case 4:
+      pause = strobe(sensorValue);
+      break;
+    case 5:
       pause = strobe(0);
       break;
       
@@ -68,9 +71,9 @@ uint16_t rainbow() {
   for(uint16_t i=0; i <= 7; i++) {
       uint32_t color = Wheel(((i * 36) + currentRainbowColor) & 255);
       setRowColor(i, color);
-    }
-    ++currentRainbowColor;
-    return 2;
+  }
+  ++currentRainbowColor;
+  return 2;
 }
 
 byte currentAlternateRainbowColor = 0;
@@ -79,9 +82,19 @@ uint16_t alternateRainbow() {
       uint32_t color = Wheel(((i * 85) + currentAlternateRainbowColor) & 255);
       setColumnColor(i, color);
       setRowColor(7, strip.Color(0,0,0,0));
-    }
-    ++currentAlternateRainbowColor;
-    return 2;
+  }
+  ++currentAlternateRainbowColor;
+  return 2;
+}
+
+byte currentPurpleRainbowColor = 0;
+uint16_t purple() {
+  for(uint16_t i=0; i <= 7; i++) {
+    uint32_t color = purpleWheel(((i * 36) + currentPurpleRainbowColor) & 255);
+    setRowColor(i, color);
+  }
+  ++currentPurpleRainbowColor;
+  return 2;
 }
 
 byte currentOrange = 0;
@@ -184,6 +197,22 @@ uint32_t orangeWheel(byte WheelPos) {
   }
   WheelPos -= 126;
   return strip.Color(255, 129 - WheelPos , 0);
+}
+
+uint32_t purpleWheel(byte WheelPos) {
+  //WheelPos = 255 - WheelPos;
+  if (WheelPos < 128) {
+    byte red = WheelPos <= 125 ? 125 - WheelPos : 0;
+    byte green = WheelPos * 2;
+    byte blue = 255 - WheelPos * 2;
+    return strip.Color(red, green, blue);
+  } else {
+    WheelPos-=128;
+    byte red = WheelPos <= 125 ? WheelPos : 125;
+    byte green = 255 - WheelPos * 2;
+    byte blue = WheelPos * 2;
+    return strip.Color(red, green, blue);
+  }
 }
 
 uint8_t red(uint32_t c) {
