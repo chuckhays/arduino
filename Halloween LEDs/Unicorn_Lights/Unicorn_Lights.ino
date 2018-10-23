@@ -10,7 +10,7 @@
 #define LEDPIN 5
 #define SWITCHPIN 9
 
-#define PATTERNS_COUNT 4
+#define PATTERNS_COUNT 5
 
 #define BUTTON_PRESS_DELAY 150
 
@@ -28,78 +28,86 @@ void setup() {
   strip.setBrightness(BRIGHTNESS); // Set max brightness.
   strip.begin(); // Initialize the neopixel strip object.
   strip.show(); // Output current LED colors (all off currently).
+
+  Serial.begin(9600);
 }
 
 void loop() {
   // First, check if the switch is pressed.
   checkForSwitchPress();
 
+  int sensorValue = analogRead(POTPIN) / 4;
+  uint16_t pause = 0;
   // Next, decide which pattern we are currently showing and run it.
   switch (current_pattern) {
     case 0:
-      rainbow();
+      pause = rainbow();
       break;
     case 1:
-      alternateRainbow();
+      pause = alternateRainbow();
       break;
     case 2:
-      orange();
+      pause = orange();
       break;
     case 3:
-      strobe();
+      pause = strobe(sensorValue);
+      break;
+    case 4:
+      pause = strobe(0);
       break;
       
   }
   strip.show();
-  int sensorValue = analogRead(POTPIN) / 4;
-  delay(sensorValue/4);
+  
+  delay(pause);
   analogWrite(LEDPIN, sensorValue);
 }
 
 byte currentRainbowColor = 0;
-void rainbow() {
+uint16_t rainbow() {
   for(uint16_t i=0; i <= 7; i++) {
       uint32_t color = Wheel(((i * 36) + currentRainbowColor) & 255);
       setRowColor(i, color);
     }
     ++currentRainbowColor;
+    return 2;
 }
 
 byte currentAlternateRainbowColor = 0;
-void alternateRainbow() {
+uint16_t alternateRainbow() {
   for(uint16_t i=0; i <= 2; i++) {
       uint32_t color = Wheel(((i * 85) + currentAlternateRainbowColor) & 255);
       setColumnColor(i, color);
       setRowColor(7, strip.Color(0,0,0,0));
     }
     ++currentAlternateRainbowColor;
+    return 2;
 }
 
 byte currentOrange = 0;
-void orange() {
+uint16_t orange() {
   for(uint16_t i=0; i <= 7; i++) {
     uint8_t wheelPos = ((i * 36) + currentOrange) & 255;
     uint32_t color = orangeWheel(wheelPos);
     setRowColor(7 - i, color);
   }
   ++currentOrange;
+  return 2;
 }
 
 byte currentStrobe = 0;
-void strobe() {
-  uint32_t color = strip.Color(255,255,255,255);
+uint16_t strobe(uint16_t sensor) {
+  uint32_t color = sensor == 0 ? strip.Color(255, 255, 255, 255) : Wheel(sensor & 255);
   uint32_t off = strip.Color(0,0,0,0);
   for(uint16_t i=0; i <= 7; i++) {
-    if (currentStrobe < 5) {
+    if (currentStrobe == 1) {
       setRowColor(i, color);
     } else {
       setRowColor(i, off);
     }
   }
-  currentStrobe += 10;
-  if (currentStrobe > 240) {
-    currentStrobe = 0;
-  }
+  currentStrobe = (currentStrobe + 1) % 2;
+  return 30 + 30 * currentStrobe;
 }
 
 // Top
