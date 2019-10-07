@@ -79,13 +79,24 @@ void command(unsigned long command) {
     b = 0;
     break;
   case 0xF710EF:
-
+    r = 255;
+    g = 20;
+    b = 0;
     break;
   case 0xF730CF:
+    r = 255;
+    g = 40;
+    b = 0;
     break;
   case 0xF708F7:
+    r = 255;
+    g = 65;
+    b = 0;
     break;
   case 0xF728D7:
+    r = 255;
+    g = 128;
+    b = 0;
     break;
 
   case 0xF7807F: // Color -
@@ -97,12 +108,24 @@ void command(unsigned long command) {
     b = 0;
     break;
   case 0xF7906F:
+    r = 150;
+    g = 255;
+    b = 150;
     break;
   case 0xF7B04F:
+    r = 138;
+    g = 240;
+    b = 255;
     break;
   case 0xF78877:
+    r = 75;
+    g = 185;
+    b = 180;
     break;
   case 0xF7A857:
+    r = 20;
+    g = 195;
+    b = 230;
     break;
 
   case 0xF740BF: // Color on/off
@@ -114,12 +137,24 @@ void command(unsigned long command) {
     b = 255;
     break;
   case 0xF750AF:
+    r = 10;
+    g = 175;
+    b = 245;
     break;
   case 0xF7708F:
+    r = 105;
+    g = 80;
+    b = 175;
     break;
   case 0xF748B7:
+    r = 175;
+    g = 90;
+    b = 210;
     break;
   case 0xF76897:
+    r = 255;
+    g = 51;
+    b = 153;
     break;
 
   case 0xF7C03F: // W on/off
