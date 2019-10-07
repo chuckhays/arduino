@@ -1,19 +1,18 @@
 #include <Adafruit_NeoPixel.h>
-#ifdef __AVR__
- #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
-#endif
+
 #include <Wire.h>
+
 #include <EEPROM.h>
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1:
-#define LED_PIN     6
+# define LED_PIN 6
 
 // How many NeoPixels are attached to the Arduino?
-#define LED_COUNT  30
+# define LED_COUNT 30
 
 // NeoPixel brightness, 0 (min) to 255 (max)
-#define BRIGHTNESS 255
+# define BRIGHTNESS 255
 
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
 
@@ -39,9 +38,9 @@ void setup() {
   Wire.begin(8);
   Wire.onReceive(receiveEvent);
   //Serial.begin(9600);
-  
-  strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
-  strip.show();            // Turn OFF all pixels ASAP
+
+  strip.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  strip.show(); // Turn OFF all pixels ASAP
   strip.setBrightness(255); // Set BRIGHTNESS to about 1/5 (max = 255)
 }
 
@@ -70,77 +69,77 @@ void receiveEvent(int howMany) {
 }
 
 void command(unsigned long command) {
-  switch(command) {
-    case 0xF700FF: // Color +
+  switch (command) {
+  case 0xF700FF: // Color +
     cBright = cBright + min(25, 255 - cBright);
-break;
-case 0xF720DF: // R
-r = 255;
-g = 0;
-b = 0;
-break;
-case 0xF710EF:
+    break;
+  case 0xF720DF: // R
+    r = 255;
+    g = 0;
+    b = 0;
+    break;
+  case 0xF710EF:
 
-break;
-case 0xF730CF:
-break;
-case 0xF708F7:
-break;
-case 0xF728D7:
-break;
+    break;
+  case 0xF730CF:
+    break;
+  case 0xF708F7:
+    break;
+  case 0xF728D7:
+    break;
 
-case 0xF7807F: // Color -
-cBright = cBright - min(25, cBright);
-break;
-case 0xF7A05F: // G
-r = 0;
-g = 255;
-b = 0;
-break;
-case 0xF7906F:
-break;
-case 0xF7B04F:
-break;
-case 0xF78877:
-break;
-case 0xF7A857:
-break;
+  case 0xF7807F: // Color -
+    cBright = cBright - min(25, cBright);
+    break;
+  case 0xF7A05F: // G
+    r = 0;
+    g = 255;
+    b = 0;
+    break;
+  case 0xF7906F:
+    break;
+  case 0xF7B04F:
+    break;
+  case 0xF78877:
+    break;
+  case 0xF7A857:
+    break;
 
-case 0xF740BF: // Color on/off
-cEnabled = !cEnabled;
-break;
-case 0xF7609F: // B
-r = 0;
-g = 0;
-b = 255;
-break;
-case 0xF750AF:
-break;
-case 0xF7708F:
-break;
-case 0xF748B7:
-break;
-case 0xF76897:
-break;
+  case 0xF740BF: // Color on/off
+    cEnabled = !cEnabled;
+    break;
+  case 0xF7609F: // B
+    r = 0;
+    g = 0;
+    b = 255;
+    break;
+  case 0xF750AF:
+    break;
+  case 0xF7708F:
+    break;
+  case 0xF748B7:
+    break;
+  case 0xF76897:
+    break;
 
-case 0xF7C03F: // W on/off
-wEnabled = !wEnabled;
-break;
-case 0xF7E01F: // W +
-  w = w + min(25, 255 - w);
-break;
-case 0xF7D02F: // W -
-  w = w - min(25, w);
-break;
-case 0xF7F00F: // Cloudy
-break;
-case 0xF7C837: // Thunderstorm
-break;
-case 0xF7E817: // Rainbow
-break;
+  case 0xF7C03F: // W on/off
+    wEnabled = !wEnabled;
+    break;
+  case 0xF7E01F: // W +
+    w = w + min(25, 255 - w);
+    break;
+  case 0xF7D02F: // W -
+    w = w - min(25, w);
+    break;
+  case 0xF7F00F: // Cloudy
+    break;
+  case 0xF7C837: // Thunderstorm
+    break;
+  case 0xF7E817: // Rainbow
+    break;
   }
-  
-// Store values.
+
+  // Store values.
   EEPROM.update(0, w);
   EEPROM.update(1, r);
   EEPROM.update(2, g);
@@ -151,14 +150,14 @@ break;
 }
 
 void loop() {
-  float colorScale = ((float)cBright / 255.0);
-  
-  uint8_t red = ((float)r * colorScale);
-  uint8_t blue = ((float)b * colorScale);
-  uint8_t green = ((float)g * colorScale);
+  float colorScale = ((float) cBright / 255.0);
+
+  uint8_t red = ((float) r * colorScale);
+  uint8_t blue = ((float) b * colorScale);
+  uint8_t green = ((float) g * colorScale);
   uint32_t color = strip.Color(cEnabled ? red : 0, cEnabled ? green : 0, cEnabled ? blue : 0, wEnabled ? w : 0);
-  for(int i=0; i<strip.numPixels(); i++) {
+  for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, color);
   }
-  strip.show();                     
+  strip.show();
 }
