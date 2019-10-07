@@ -2,6 +2,8 @@
 #ifdef __AVR__
  #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
+#include <Wire.h>
+#include <EEPROM.h>
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1:
@@ -13,81 +15,150 @@
 // NeoPixel brightness, 0 (min) to 255 (max)
 #define BRIGHTNESS 255
 
-#define AVE 3
-#define MULT 2
-
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
 
-unsigned long white = 0;
-unsigned long red = 0;
-unsigned long blue = 0;
-unsigned long green = 0;
+uint8_t w = 0;
+uint8_t r = 0;
+uint8_t b = 0;
+uint8_t g = 0;
+bool wEnabled = false;
+bool cEnabled = false;
+uint8_t cBright = 0;
 
-unsigned long whiteAverage = 0;
-unsigned long redAverage = 0;
-unsigned long blueAverage = 0;
-unsigned long greenAverage = 0;
+uint8_t data[4];
 
 void setup() {
+  w = EEPROM.read(0);
+  r = EEPROM.read(1);
+  g = EEPROM.read(2);
+  b = EEPROM.read(3);
+  cBright = EEPROM.read(4);
+  wEnabled = EEPROM.read(5);
+  cEnabled = EEPROM.read(6);
+
+  Wire.begin(8);
+  Wire.onReceive(receiveEvent);
+  //Serial.begin(9600);
+  
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(255); // Set BRIGHTNESS to about 1/5 (max = 255)
 }
 
+void receiveEvent(int howMany) {
+  // We need to receive 4 bytes and convert to an unsigned long.
+  data[0] = 0;
+  data[1] = 0;
+  data[2] = 0;
+  data[3] = 0;
+  int index = 0;
+  while (Wire.available()) {
+    uint8_t d = Wire.read();
+    if (index < 4) {
+      data[index] = d;
+    }
+    index++;
+  }
+  if (index == 4) {
+    // Convert to unsigned long.
+    unsigned long output = data[0];
+    output = (output << 8) | data[1];
+    output = (output << 8) | data[2];
+    output = (output << 8) | data[3];
+    command(output);
+  }
+}
+
+void command(unsigned long command) {
+  switch(command) {
+    case 0xF700FF: // Color +
+    cBright = cBright + min(25, 255 - cBright);
+break;
+case 0xF720DF: // R
+r = 255;
+g = 0;
+b = 0;
+break;
+case 0xF710EF:
+
+break;
+case 0xF730CF:
+break;
+case 0xF708F7:
+break;
+case 0xF728D7:
+break;
+
+case 0xF7807F: // Color -
+cBright = cBright - min(25, cBright);
+break;
+case 0xF7A05F: // G
+r = 0;
+g = 255;
+b = 0;
+break;
+case 0xF7906F:
+break;
+case 0xF7B04F:
+break;
+case 0xF78877:
+break;
+case 0xF7A857:
+break;
+
+case 0xF740BF: // Color on/off
+cEnabled = !cEnabled;
+break;
+case 0xF7609F: // B
+r = 0;
+g = 0;
+b = 255;
+break;
+case 0xF750AF:
+break;
+case 0xF7708F:
+break;
+case 0xF748B7:
+break;
+case 0xF76897:
+break;
+
+case 0xF7C03F: // W on/off
+wEnabled = !wEnabled;
+break;
+case 0xF7E01F: // W +
+  w = w + min(25, 255 - w);
+break;
+case 0xF7D02F: // W -
+  w = w - min(25, w);
+break;
+case 0xF7F00F: // Cloudy
+break;
+case 0xF7C837: // Thunderstorm
+break;
+case 0xF7E817: // Rainbow
+break;
+  }
+  
+// Store values.
+  EEPROM.update(0, w);
+  EEPROM.update(1, r);
+  EEPROM.update(2, g);
+  EEPROM.update(3, b);
+  EEPROM.update(4, cBright);
+  EEPROM.update(5, wEnabled);
+  EEPROM.update(6, cEnabled);
+}
+
 void loop() {
-  white = pulseIn(A3, LOW, 20000);
-  if (white == 0 && !digitalRead(A3)) {
-    white = 8000;
-  }
-  red = pulseIn(A1, LOW, 20000);
-  if (red == 0 && !digitalRead(A1)) {
-    red = 8000;
-  }
-  blue = pulseIn(A2, LOW, 20000);
-  if (blue == 0 && !digitalRead(A2)) {
-    blue = 8000;
-  }
-  green = pulseIn(A0, LOW, 20000);
-  if (green == 0 && !digitalRead(A0)) {
-    green = 8000;
-  }
-
-  whiteAverage = (white + whiteAverage * MULT) / AVE;
-  redAverage = (red + redAverage * MULT) / AVE;
-  blueAverage = (blue + blueAverage * MULT) / AVE;
-  greenAverage = (green + greenAverage * MULT) / AVE;
-
-  // Calculate what colors to show.
-  int w = 0;
-  int r = 0;
-  int g = 0;
-  int b = 0;
-
-  if (whiteAverage > 7500) {
-    w = 255;
-  } else {
-    w = whiteAverage / 30;
-  }
-  if (redAverage > 7500) {
-    r = 255;
-  } else {
-    r = redAverage / 30;
-  }
-  if (blueAverage > 7500) {
-    b = 255;
-  } else {
-    b = blueAverage / 30;
-  }
-  if (greenAverage > 7500) {
-    g = 255;
-  } else {
-    g = greenAverage / 30;
-  }
-
-  uint32_t color = strip.Color(r, b, g, w);
+  float colorScale = ((float)cBright / 255.0);
+  
+  uint8_t red = ((float)r * colorScale);
+  uint8_t blue = ((float)b * colorScale);
+  uint8_t green = ((float)g * colorScale);
+  uint32_t color = strip.Color(cEnabled ? red : 0, cEnabled ? green : 0, cEnabled ? blue : 0, wEnabled ? w : 0);
   for(int i=0; i<strip.numPixels(); i++) {
     strip.setPixelColor(i, color);
   }
   strip.show();                     
- 
 }
