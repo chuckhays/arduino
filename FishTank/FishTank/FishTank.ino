@@ -14,6 +14,11 @@
 // NeoPixel brightness, 0 (min) to 255 (max)
 # define BRIGHTNESS 255
 
+#define NONE 0
+#define CLOUDY 1
+#define STORM 2
+#define RAINBOW 3
+
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
 
 uint8_t w = 0;
@@ -23,6 +28,7 @@ uint8_t g = 0;
 bool wEnabled = false;
 bool cEnabled = false;
 uint8_t cBright = 0;
+uint8_t specialMode = 0;
 
 uint8_t data[4];
 
@@ -34,14 +40,15 @@ void setup() {
   cBright = EEPROM.read(4);
   wEnabled = EEPROM.read(5);
   cEnabled = EEPROM.read(6);
+  specialMode = EEPROM.read(7);
 
   Wire.begin(8);
   Wire.onReceive(receiveEvent);
   //Serial.begin(9600);
 
-  strip.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
-  strip.show(); // Turn OFF all pixels ASAP
-  strip.setBrightness(255); // Set BRIGHTNESS to about 1/5 (max = 255)
+  strip.begin();
+  strip.show();
+  strip.setBrightness(255);
 }
 
 void receiveEvent(int howMany) {
@@ -130,6 +137,7 @@ void command(unsigned long command) {
 
   case 0xF740BF: // Color on/off
     cEnabled = !cEnabled;
+    specialMode = NONE;
     break;
   case 0xF7609F: // B
     r = 0;
@@ -159,6 +167,7 @@ void command(unsigned long command) {
 
   case 0xF7C03F: // W on/off
     wEnabled = !wEnabled;
+    specialMode = NONE;
     break;
   case 0xF7E01F: // W +
     w = w + min(25, 255 - w);
@@ -167,10 +176,13 @@ void command(unsigned long command) {
     w = w - min(25, w);
     break;
   case 0xF7F00F: // Cloudy
+  specialMode = CLOUDY;
     break;
   case 0xF7C837: // Thunderstorm
+  specialMode = STORM;
     break;
   case 0xF7E817: // Rainbow
+  specialMode = RAINBOW;
     break;
   }
 
@@ -182,6 +194,7 @@ void command(unsigned long command) {
   EEPROM.update(4, cBright);
   EEPROM.update(5, wEnabled);
   EEPROM.update(6, cEnabled);
+  EEPROM.update(7, specialMode);
 }
 
 void loop() {
