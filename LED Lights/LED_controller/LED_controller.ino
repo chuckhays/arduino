@@ -38,7 +38,7 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 #define ENABLE_PIN 11
 
-#define MODES 8
+#define MODES 9
 Mode* modes[MODES];
 int currentMode = 1;
 unsigned long lastModeSwitchTime = 0;
@@ -64,6 +64,7 @@ void setup() {
   modes[5] = new Solid(&tft, 0, 0, 0, 128);
   modes[6] = new Solid(&tft, 255, 0, 0, 255);
   modes[7] = new Solid(&tft, 0, 0, 255, 255);
+  modes[8] = new Solid(&tft, 255, 0, 255, 0);
 
   Serial.begin(115200);
 
@@ -174,4 +175,3 @@ void clearRect(int x, int y, int w, int h) {
                w + 2 * RECTBORDER + 2 * RECTPADDING,
                h + 2 * RECTBORDER + 2 * RECTPADDING, ILI9341_BLACK);
 }
-
