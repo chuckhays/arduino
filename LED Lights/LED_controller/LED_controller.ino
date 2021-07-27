@@ -6,11 +6,12 @@
 #include "Bars.h"
 #include "Cycle.h"
 #include "Solid.h"
+#include "Chase.h"
 
 #define STMPE_CS 6
-#define TFT_CS   9
-#define TFT_DC   10
-#define SD_CS    5
+#define TFT_CS 9
+#define TFT_DC 10
+#define SD_CS 5
 
 #define YPIN A3
 #define XPIN A2
@@ -38,33 +39,37 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 #define ENABLE_PIN 11
 
-#define MODES 9
-Mode* modes[MODES];
-int currentMode = 1;
+#define MODES 11
+Mode *modes[MODES];
+int currentMode = 2;
 unsigned long lastModeSwitchTime = 0;
 
-void setup() {
+void setup()
+{
   pinMode(ENABLE_PIN, OUTPUT);
   digitalWrite(ENABLE_PIN, HIGH);
   setupStrip();
-  for(uint16_t n=0; n < numPixels(); ++n) {
+  for (uint16_t n = 0; n < numPixels(); ++n)
+  {
     setPixelColor(n, 0, 0, 0, 255);
   }
   show();
-  
+
+  modes[0] = new Chase(&tft, 0, 0, 0, 255);
   Cycle *c = new Cycle(&tft);
-  modes[0] = c;
-  
+  modes[1] = c;
+
   //Bars *b = new Bars(&tft);
   //modes[1] = b;
-  modes[1] = new Solid(&tft, 0, 0, 0, 255);
-  modes[2] = new Solid(&tft, 255, 0, 0, 0);
-  modes[3] = new Solid(&tft, 0, 255, 0, 0);
-  modes[4] = new Solid(&tft, 0, 0, 255, 0);
-  modes[5] = new Solid(&tft, 0, 0, 0, 128);
-  modes[6] = new Solid(&tft, 255, 0, 0, 255);
-  modes[7] = new Solid(&tft, 0, 0, 255, 255);
-  modes[8] = new Solid(&tft, 255, 0, 255, 0);
+  modes[2] = new Solid(&tft, 0, 0, 0, 255);
+  modes[3] = new Solid(&tft, 255, 0, 0, 0);
+  modes[4] = new Solid(&tft, 0, 255, 0, 0);
+  modes[5] = new Solid(&tft, 0, 0, 255, 0);
+  modes[6] = new Solid(&tft, 0, 0, 0, 128);
+  modes[7] = new Solid(&tft, 255, 0, 0, 255);
+  modes[8] = new Solid(&tft, 0, 0, 255, 255);
+  modes[9] = new Solid(&tft, 255, 0, 255, 0);
+  modes[10] = new Chase(&tft, 255, 0, 0, 0);
 
   Serial.begin(115200);
 
@@ -74,7 +79,8 @@ void setup() {
   modes[currentMode]->load();
 }
 
-void loop(void) {
+void loop(void)
+{
   Mode *mode = modes[currentMode];
 
   int s = digitalRead(SWITCH);
@@ -90,68 +96,94 @@ void loop(void) {
   int x = (x1 + x2 + x3) / 3;
   int y = (y1 + y2 + y3) / 3;
 
-  if (y < MINSIGNAL) {
+  if (y < MINSIGNAL)
+  {
     changeMode(1);
-  } else if (y < STARTLOWSIGNAL) {
-  } else if (y > MAXSIGNAL) {
+  }
+  else if (y < STARTLOWSIGNAL)
+  {
+  }
+  else if (y > MAXSIGNAL)
+  {
     changeMode(-1);
-  } else if (y > STARTHIGHSIGNAL) {
-  } else {
+  }
+  else if (y > STARTHIGHSIGNAL)
+  {
+  }
+  else
+  {
     lastModeSwitchTime = 0;
   }
   //mode->processInput(x, y, s);
   mode->updateLEDs();
 
   // Draw top more.
-  if (currentMode > 1) {
+  if (currentMode > 1)
+  {
     Mode *topMoreMode = modes[currentMode - 2];
     topMoreMode->drawRect(RECTLEFT, 0, RECTWIDTH, MOREHEIGHT);
     drawOutline(RECTLEFT, 0, RECTWIDTH, MOREHEIGHT);
-  } else {
+  }
+  else
+  {
     clearRect(RECTLEFT, 0, RECTWIDTH, MOREHEIGHT);
   }
-  
+
   // Draw first mode rect.
-  if (currentMode > 0) {
+  if (currentMode > 0)
+  {
     Mode *topMode = modes[currentMode - 1];
     topMode->drawRect(RECTLEFT, FIRSTTOP, RECTWIDTH, RECTHEIGHT);
-    drawOutline(RECTLEFT, FIRSTTOP); 
-  } else {
+    drawOutline(RECTLEFT, FIRSTTOP);
+  }
+  else
+  {
     clearRect(RECTLEFT, FIRSTTOP);
   }
   // Draw selected mode rect.
   mode->drawRect(RECTLEFT, MIDDLETOP, RECTWIDTH, RECTHEIGHT);
   drawOutline(RECTLEFT, MIDDLETOP, ILI9341_WHITE);
-  
+
   // Draw last mode rect.
-  if (currentMode < MODES - 1) {
+  if (currentMode < MODES - 1)
+  {
     Mode *bottomMode = modes[currentMode + 1];
     bottomMode->drawRect(RECTLEFT, BOTTOMTOP, RECTWIDTH, RECTHEIGHT);
     drawOutline(RECTLEFT, BOTTOMTOP);
-  } else {
+  }
+  else
+  {
     clearRect(RECTLEFT, BOTTOMTOP);
   }
 
   // Draw bottom more.
-  if (currentMode < MODES - 2) {
+  if (currentMode < MODES - 2)
+  {
     Mode *bottomMoreMode = modes[currentMode + 2];
     bottomMoreMode->drawRect(RECTLEFT, MOREBOTTOMTOP, RECTWIDTH, MOREHEIGHT);
     drawOutline(RECTLEFT, MOREBOTTOMTOP, RECTWIDTH, MOREHEIGHT);
-  } else {
+  }
+  else
+  {
     clearRect(RECTLEFT, MOREBOTTOMTOP, RECTWIDTH, MOREHEIGHT);
   }
 }
 
-void changeMode(int delta) {
-  if (millis() - lastModeSwitchTime < MODEDELAYTIME) {
+void changeMode(int delta)
+{
+  if (millis() - lastModeSwitchTime < MODEDELAYTIME)
+  {
     return;
   }
   lastModeSwitchTime = millis();
-  if (delta > 0 && currentMode < MODES - 1) {
+  if (delta > 0 && currentMode < MODES - 1)
+  {
     currentMode++;
     Mode *mode = modes[currentMode];
     mode->load();
-  } else if (delta < 0 && currentMode > 0) {
+  }
+  else if (delta < 0 && currentMode > 0)
+  {
     currentMode--;
     Mode *mode = modes[currentMode];
     mode->load();
@@ -161,17 +193,19 @@ void changeMode(int delta) {
 void drawOutline(int x, int y) { drawOutline(x, y, RECTWIDTH, RECTHEIGHT, ILI9341_WHITE); }
 void drawOutline(int x, int y, uint16_t color) { drawOutline(x, y, RECTWIDTH, RECTHEIGHT, color); }
 void drawOutline(int x, int y, int w, int h) { drawOutline(x, y, w, h, ILI9341_WHITE); }
-void drawOutline(int x, int y, int w, int h, uint16_t color) {
-  tft.drawRect(x - RECTBORDER - RECTPADDING, 
-               y - RECTBORDER - RECTPADDING, 
-               w + 2 * RECTBORDER + 2 * RECTPADDING, 
+void drawOutline(int x, int y, int w, int h, uint16_t color)
+{
+  tft.drawRect(x - RECTBORDER - RECTPADDING,
+               y - RECTBORDER - RECTPADDING,
+               w + 2 * RECTBORDER + 2 * RECTPADDING,
                h + 2 * RECTBORDER + 2 * RECTPADDING, color);
 }
 
 void clearRect(int x, int y) { clearRect(x, y, RECTWIDTH, RECTHEIGHT); }
-void clearRect(int x, int y, int w, int h) {
-  tft.fillRect(x - RECTBORDER - RECTPADDING, 
-               y - RECTBORDER - RECTPADDING, 
+void clearRect(int x, int y, int w, int h)
+{
+  tft.fillRect(x - RECTBORDER - RECTPADDING,
+               y - RECTBORDER - RECTPADDING,
                w + 2 * RECTBORDER + 2 * RECTPADDING,
                h + 2 * RECTBORDER + 2 * RECTPADDING, ILI9341_BLACK);
 }
