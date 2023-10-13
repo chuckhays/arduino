@@ -10,7 +10,7 @@
 #define LEDPIN 5
 #define SWITCHPIN 9
 
-#define PATTERNS_COUNT 7
+#define PATTERNS_COUNT 9
 
 #define BUTTON_PRESS_DELAY 150
 
@@ -55,13 +55,19 @@ void loop()
     pause = orange();
     break;
   case 4:
-    pause = strobe(sensorValue);
+    pause = solid(sensorValue);
     break;
   case 5:
-    pause = strobe(0);
+    pause = strobe(sensorValue);
     break;
   case 6:
+    pause = strobe(0);
+    break;
+  case 7:
     pause = fire();
+    break;
+  case 8:
+    pause = police();
     break;
   }
   strip.show();
@@ -95,6 +101,17 @@ uint16_t alternateRainbow()
   return 2;
 }
 
+byte currentPoliceColor = 0;
+uint16_t police() {
+  for (uint16_t i = 0; i <= 2; i++) {
+    uint32_t color = policeWheel(((i * 85) + currentPoliceColor) &255);
+    setColumnColor(i, color);
+    setRowColor(7, strip.Color(0,0,0,0));
+  }
+  ++currentPoliceColor;
+  return 2;
+}
+
 byte currentPurpleRainbowColor = 0;
 uint16_t purple()
 {
@@ -118,6 +135,17 @@ uint16_t orange()
   }
   ++currentOrange;
   return 2;
+}
+
+uint16_t solid(uint16_t sensor)
+{
+  uint32_t color = sensor == 0 ? strip.Color(255, 255, 255, 255) : Wheel(sensor & 255);
+  uint32_t off = strip.Color(0, 0, 0, 0);
+  for (uint16_t i = 0; i <= 7; i++)
+  {
+    setRowColor(i, color);
+  }
+  return 30;
 }
 
 byte currentStrobe = 0;
@@ -243,6 +271,22 @@ uint32_t Wheel(byte WheelPos)
   }
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0, 0);
+}
+
+uint32_t policeWheel(byte WheelPos)
+{
+  WheelPos = 255 - WheelPos;
+  if (WheelPos < 85)
+  {
+    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3, 0);
+  }
+  if (WheelPos < 170)
+  {
+    WheelPos -= 85;
+    return strip.Color(0, 0, 255 - WheelPos * 3, WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return strip.Color(WheelPos * 3, 0, 0, 255 - WheelPos * 3);
 }
 
 uint32_t orangeWheel(byte WheelPos)
