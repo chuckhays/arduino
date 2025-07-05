@@ -10,6 +10,8 @@ public:
     void load() override;
     void updateLEDs() override;
     void drawRect(int x, int y, int w, int h) override;
+    void draw() override;
+    void processInput(int x, int y, int s) override;
 private:
     int step;
     const uint8_t (*chaseColors)[4];

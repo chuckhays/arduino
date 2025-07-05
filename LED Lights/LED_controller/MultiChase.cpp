@@ -36,16 +36,25 @@ void MultiChase::drawRect(int x, int y, int w, int h) {
     for (int c = 0; c < numChases; ++c) {
         int x0 = x + ((c * stripeW - offset + w) % w);
         int actualW = (c == numChases - 1) ? (w - c * stripeW) : stripeW;
+        
+        uint16_t fill =  chaseColors[c][3] == 255 ? 
+        tft->color565(255, 255, 255)
+        : tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]);
         if (x0 + actualW <= x + w) {
-            tft->fillRect(x0, y, actualW, h, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
+            tft->fillRect(x0, y, actualW, h, fill);
         } else {
             // Draw wrapped part
             int part1 = (x + w) - x0;
-            tft->fillRect(x0, y, part1, h, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
+            tft->fillRect(x0, y, part1, h, fill);
             int part2 = actualW - part1;
             if (part2 > 0) {
-                tft->fillRect(x, y, part2, h, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
+                tft->fillRect(x, y, part2, h, fill);
             }
         }
     }
 }
+
+// Add empty implementations for draw and processInput
+void MultiChase::draw() {}
+
+void MultiChase::processInput(int x, int y, int s) {}

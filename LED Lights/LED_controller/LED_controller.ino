@@ -48,11 +48,9 @@ unsigned long lastModeSwitchTime = 0;
 // Define colors for MultiChase
 const uint8_t multiChaseColors[][4] = {
   {255, 0, 0, 0},    // Red
-  {0, 255, 0, 0},    // Green
+  {0, 0, 0, 255},    // White
   {0, 0, 255, 0},    // Blue
-  {255, 255, 0, 0},  // Yellow
-  {0, 255, 255, 0},  // Cyan
-  {255, 0, 255, 0}   // Magenta
+  {0, 0, 0, 0}  // Black
 };
 
 void setup()
