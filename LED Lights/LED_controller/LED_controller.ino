@@ -7,6 +7,7 @@
 #include "Cycle.h"
 #include "Solid.h"
 #include "Chase.h"
+#include "MultiChase.h"
 
 #define STMPE_CS 6
 #define TFT_CS 9
@@ -39,7 +40,7 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 #define ENABLE_PIN 11
 
-#define MODES 11
+#define MODES 12
 Mode *modes[MODES];
 int currentMode = 2;
 unsigned long lastModeSwitchTime = 0;
@@ -70,6 +71,7 @@ void setup()
   modes[8] = new Solid(&tft, 0, 0, 255, 255);
   modes[9] = new Solid(&tft, 255, 0, 255, 0);
   modes[10] = new Chase(&tft, 255, 0, 0, 0);
+  modes[11] = new MultiChase(&tft);
 
   Serial.begin(115200);
 
