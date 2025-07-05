@@ -25,15 +25,27 @@ void MultiChase::updateLEDs() {
 
 void MultiChase::drawRect(int x, int y, int w, int h) {
     static unsigned long lastUpdate = 0;
+    static int offset = 0;
     unsigned long now = millis();
     if (now - lastUpdate < 250) {
         return;
     }
     lastUpdate = now;
+    offset = (offset + 1) % w;
     int stripeW = w / numChases;
     for (int c = 0; c < numChases; ++c) {
-        int x0 = x + c * stripeW;
+        int x0 = x + ((c * stripeW - offset + w) % w);
         int actualW = (c == numChases - 1) ? (w - c * stripeW) : stripeW;
-        tft->fillRect(x0, y, actualW, h, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
+        if (x0 + actualW <= x + w) {
+            tft->fillRect(x0, y, actualW, h, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
+        } else {
+            // Draw wrapped part
+            int part1 = (x + w) - x0;
+            tft->fillRect(x0, y, part1, h, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
+            int part2 = actualW - part1;
+            if (part2 > 0) {
+                tft->fillRect(x, y, part2, h, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
+            }
+        }
     }
 }
