@@ -13,15 +13,14 @@ void MultiChase::load() {
 }
 
 void MultiChase::updateLEDs() {
-    for (int c = 0; c < numChases; ++c) {
-        int base = (step + c * 8) % numPixels();
-        for (int w = 0; w < width; ++w) {
-            int pos = (base + w) % numPixels();
-            setPixelColor(pos, chaseColors[c][0], chaseColors[c][1], chaseColors[c][2], chaseColors[c][3]);
-        }
+    int total = numChases * width;
+    for (uint16_t n = 0; n < numPixels(); ++n) {
+        int idx = (n + step) % total;
+        int colorIdx = idx / width;
+        setPixelColor(n, chaseColors[colorIdx][0], chaseColors[colorIdx][1], chaseColors[colorIdx][2], chaseColors[colorIdx][3]);
     }
     show();
-    step = (step + 1) % numPixels();
+    step = (step + 1) % total;
 }
 
 void MultiChase::drawRect(int x, int y, int w, int h) {
