@@ -45,6 +45,16 @@ Mode *modes[MODES];
 int currentMode = 2;
 unsigned long lastModeSwitchTime = 0;
 
+// Define colors for MultiChase
+const uint8_t multiChaseColors[][4] = {
+  {255, 0, 0, 0},    // Red
+  {0, 255, 0, 0},    // Green
+  {0, 0, 255, 0},    // Blue
+  {255, 255, 0, 0},  // Yellow
+  {0, 255, 255, 0},  // Cyan
+  {255, 0, 255, 0}   // Magenta
+};
+
 void setup()
 {
   pinMode(ENABLE_PIN, OUTPUT);
@@ -71,7 +81,7 @@ void setup()
   modes[8] = new Solid(&tft, 0, 0, 255, 255);
   modes[9] = new Solid(&tft, 255, 0, 255, 0);
   modes[10] = new Chase(&tft, 255, 0, 0, 0);
-  modes[11] = new MultiChase(&tft);
+  modes[11] = new MultiChase(&tft, multiChaseColors, sizeof(multiChaseColors)/sizeof(multiChaseColors[0]));
 
   Serial.begin(115200);
 
