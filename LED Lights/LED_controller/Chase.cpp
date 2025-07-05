@@ -9,7 +9,7 @@
 #define LINE3 43
 #define TEXTX 25
 
-#define BARWIDTH 25
+// #define BARWIDTH 25
 #define BAROFFSET 40
 #define REDBARX 80
 #define GREENBARX (REDBARX + BAROFFSET)
