@@ -40,17 +40,31 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
 #define ENABLE_PIN 11
 
-#define MODES 12
+#define MODES 14
 Mode *modes[MODES];
 int currentMode = 2;
 unsigned long lastModeSwitchTime = 0;
 
-// Define colors for MultiChase
-const uint8_t multiChaseColors[][4] = {
+const uint8_t multiChaseColors1[][4] = {
   {255, 0, 0, 0},    // Red
   {0, 0, 0, 255},    // White
   {0, 0, 255, 0},    // Blue
+  // {0, 0, 0, 0}  // Black
+};
+
+const uint8_t multiChaseColors2[][4] = {
+  {0, 0, 0, 255},    // White
   {0, 0, 0, 0}  // Black
+};
+
+const uint8_t multiChaseColors3[][4] = {
+  {255, 0, 0, 0},    // Red
+  {255, 127, 0, 0},    // Orange
+  {255, 255, 0, 0},    // Yellow
+  {0, 255, 0, 0},    // Green
+  {0, 0, 255, 0},    // Blue
+  {75, 0, 130, 0},    // Indigo
+  {148, 0, 211, 0}     // Violet
 };
 
 void setup()
@@ -79,7 +93,9 @@ void setup()
   modes[8] = new Solid(&tft, 0, 0, 255, 255);
   modes[9] = new Solid(&tft, 255, 0, 255, 0);
   modes[10] = new Chase(&tft, 255, 0, 0, 0);
-  modes[11] = new MultiChase(&tft, multiChaseColors, sizeof(multiChaseColors)/sizeof(multiChaseColors[0]), 2);
+  modes[11] = new MultiChase(&tft, multiChaseColors1, sizeof(multiChaseColors1)/sizeof(multiChaseColors1[0]), 16);
+  modes[12] = new MultiChase(&tft, multiChaseColors2, sizeof(multiChaseColors2)/sizeof(multiChaseColors2[0]), 6);
+  modes[13] = new MultiChase(&tft, multiChaseColors3, sizeof(multiChaseColors3)/sizeof(multiChaseColors3[0]), 8);
 
   Serial.begin(115200);
 

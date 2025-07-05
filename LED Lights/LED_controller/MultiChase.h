@@ -17,6 +17,8 @@ private:
     const uint8_t (*chaseColors)[4];
     int numChases;
     int width;
+    unsigned long lastUpdate;
+    int offset;
 };
 
 #endif // MULTICHASE_H
