@@ -6,7 +6,7 @@
 
 class MultiChase : public Mode {
 public:
-    MultiChase(Adafruit_ILI9341 *tft, const uint8_t (*colors)[4], int colorCount);
+    MultiChase(Adafruit_ILI9341 *tft, const uint8_t (*colors)[4], int colorCount, int width);
     void load() override;
     void updateLEDs() override;
     void drawRect(int x, int y, int w, int h) override;
@@ -14,6 +14,7 @@ private:
     int step;
     const uint8_t (*chaseColors)[4];
     int numChases;
+    int width;
 };
 
 #endif // MULTICHASE_H

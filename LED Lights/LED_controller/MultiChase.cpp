@@ -1,8 +1,8 @@
 #include "MultiChase.h"
 #include "Strip.h"
 
-MultiChase::MultiChase(Adafruit_ILI9341 *tft, const uint8_t (*colors)[4], int colorCount)
-    : Mode(tft), step(0), chaseColors(colors), numChases(colorCount) {}
+MultiChase::MultiChase(Adafruit_ILI9341 *tft, const uint8_t (*colors)[4], int colorCount, int width)
+    : Mode(tft), step(0), chaseColors(colors), numChases(colorCount), width(width) {}
 
 void MultiChase::load() {
     step = 0;
@@ -14,8 +14,11 @@ void MultiChase::load() {
 
 void MultiChase::updateLEDs() {
     for (int c = 0; c < numChases; ++c) {
-        int pos = (step + c * 8) % numPixels();
-        setPixelColor(pos, chaseColors[c][0], chaseColors[c][1], chaseColors[c][2], chaseColors[c][3]);
+        int base = (step + c * 8) % numPixels();
+        for (int w = 0; w < width; ++w) {
+            int pos = (base + w) % numPixels();
+            setPixelColor(pos, chaseColors[c][0], chaseColors[c][1], chaseColors[c][2], chaseColors[c][3]);
+        }
     }
     show();
     step = (step + 1) % numPixels();

@@ -81,7 +81,7 @@ void setup()
   modes[8] = new Solid(&tft, 0, 0, 255, 255);
   modes[9] = new Solid(&tft, 255, 0, 255, 0);
   modes[10] = new Chase(&tft, 255, 0, 0, 0);
-  modes[11] = new MultiChase(&tft, multiChaseColors, sizeof(multiChaseColors)/sizeof(multiChaseColors[0]));
+  modes[11] = new MultiChase(&tft, multiChaseColors, sizeof(multiChaseColors)/sizeof(multiChaseColors[0]), 2);
 
   Serial.begin(115200);
 
