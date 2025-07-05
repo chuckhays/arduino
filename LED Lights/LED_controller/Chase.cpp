@@ -62,12 +62,12 @@ void Chase::drawRect(int x, int y, int w, int h)
 {
   unsigned long m = millis();
   unsigned long elapsed = m - lastTime;
-  //Serial.print("m:");
-  //Serial.print(m);
-  //Serial.print("e:");
-  //Serial.print(elapsed);
-  //Serial.print("l:");
-  //Serial.println(lastTime);
+  // Serial.print("m:");
+  // Serial.print(m);
+  // Serial.print("e:");
+  // Serial.print(elapsed);
+  // Serial.print("l:");
+  // Serial.println(lastTime);
   if (elapsed > 250)
   {
     lastTime = m;
@@ -76,7 +76,7 @@ void Chase::drawRect(int x, int y, int w, int h)
   }
   Serial.println(c);
 
-  //tft->fillRect(x, y, w, h, ILI9341_BLACK);
+  // tft->fillRect(x, y, w, h, ILI9341_BLACK);
 
   for (uint16_t i = 0; i < w - (BARWIDTH - 1); i = i + BARWIDTH)
   {

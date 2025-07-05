@@ -122,7 +122,7 @@ void Cycle::drawRect(int x, int y, int w, int h)
   {
     c = c - 1;
   }
-  //c = (c + 1) % 256;
+  // c = (c + 1) % 256;
   for (uint16_t i = 0; i < w; ++i)
   {
     uint32_t color = Wheel(((i * 256 / 100) + c) & 255);
@@ -148,7 +148,7 @@ void Cycle::updateLEDs()
   if (false)
   {
     c = (c + 1) % numPixels();
-    //Serial.print("C:"); Serial.println(c);
+    // Serial.print("C:"); Serial.println(c);
     for (uint16_t n = 0; n < numPixels(); ++n)
     {
       if (n == c)
@@ -163,14 +163,14 @@ void Cycle::updateLEDs()
   }
   else
   {
-    //c = (c + 1) % 256;
-    //for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
+    // c = (c + 1) % 256;
+    // for(j=0; j<256 * 5; j++) { // 5 cycles of all colors on wheel
     for (uint16_t i = 0; i < numPixels(); i++)
     {
       setPixelColor(i, Wheel(((i * 256 / numPixels()) + c) & 255));
     }
-    //delay(5);
-    //}
+    // delay(5);
+    // }
   }
   show();
 }

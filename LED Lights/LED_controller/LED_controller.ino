@@ -46,25 +46,25 @@ int currentMode = 2;
 unsigned long lastModeSwitchTime = 0;
 
 const uint8_t multiChaseColors1[][4] = {
-  {255, 0, 0, 0},    // Red
-  {0, 0, 0, 255},    // White
-  {0, 0, 255, 0},    // Blue
-  // {0, 0, 0, 0}  // Black
+    {255, 0, 0, 0}, // Red
+    {0, 0, 0, 255}, // White
+    {0, 0, 255, 0}, // Blue
+    // {0, 0, 0, 0}  // Black
 };
 
 const uint8_t multiChaseColors2[][4] = {
-  {0, 0, 0, 255},    // White
-  {0, 0, 0, 0}  // Black
+    {0, 0, 0, 255}, // White
+    {0, 0, 0, 0}    // Black
 };
 
 const uint8_t multiChaseColors3[][4] = {
-  {255, 0, 0, 0},    // Red
-  {255, 127, 0, 0},    // Orange
-  {255, 255, 0, 0},    // Yellow
-  {0, 255, 0, 0},    // Green
-  {0, 0, 255, 0},    // Blue
-  {75, 0, 130, 0},    // Indigo
-  {148, 0, 211, 0}     // Violet
+    {255, 0, 0, 0},   // Red
+    {255, 127, 0, 0}, // Orange
+    {255, 255, 0, 0}, // Yellow
+    {0, 255, 0, 0},   // Green
+    {0, 0, 255, 0},   // Blue
+    {75, 0, 130, 0},  // Indigo
+    {148, 0, 211, 0}  // Violet
 };
 
 void setup()
@@ -82,8 +82,8 @@ void setup()
   Cycle *c = new Cycle(&tft);
   modes[1] = c;
 
-  //Bars *b = new Bars(&tft);
-  //modes[1] = b;
+  // Bars *b = new Bars(&tft);
+  // modes[1] = b;
   modes[2] = new Solid(&tft, 0, 0, 0, 255);
   modes[3] = new Solid(&tft, 255, 0, 0, 0);
   modes[4] = new Solid(&tft, 0, 255, 0, 0);
@@ -93,9 +93,9 @@ void setup()
   modes[8] = new Solid(&tft, 0, 0, 255, 255);
   modes[9] = new Solid(&tft, 255, 0, 255, 0);
   modes[10] = new Chase(&tft, 255, 0, 0, 0);
-  modes[11] = new MultiChase(&tft, multiChaseColors1, sizeof(multiChaseColors1)/sizeof(multiChaseColors1[0]), 16);
-  modes[12] = new MultiChase(&tft, multiChaseColors2, sizeof(multiChaseColors2)/sizeof(multiChaseColors2[0]), 6);
-  modes[13] = new MultiChase(&tft, multiChaseColors3, sizeof(multiChaseColors3)/sizeof(multiChaseColors3[0]), 8);
+  modes[11] = new MultiChase(&tft, multiChaseColors1, sizeof(multiChaseColors1) / sizeof(multiChaseColors1[0]), 16);
+  modes[12] = new MultiChase(&tft, multiChaseColors2, sizeof(multiChaseColors2) / sizeof(multiChaseColors2[0]), 6);
+  modes[13] = new MultiChase(&tft, multiChaseColors3, sizeof(multiChaseColors3) / sizeof(multiChaseColors3[0]), 8);
 
   Serial.begin(115200);
 
@@ -140,7 +140,7 @@ void loop(void)
   {
     lastModeSwitchTime = 0;
   }
-  //mode->processInput(x, y, s);
+  // mode->processInput(x, y, s);
   mode->updateLEDs();
 
   // Draw top more.
