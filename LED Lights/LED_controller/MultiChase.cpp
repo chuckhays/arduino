@@ -24,8 +24,16 @@ void MultiChase::updateLEDs() {
 }
 
 void MultiChase::drawRect(int x, int y, int w, int h) {
-    int stripeH = h / numChases;
+    static unsigned long lastUpdate = 0;
+    unsigned long now = millis();
+    if (now - lastUpdate < 250) {
+        return;
+    }
+    lastUpdate = now;
+    int stripeW = w / numChases;
     for (int c = 0; c < numChases; ++c) {
-        tft->fillRect(x, y + c * stripeH, w, stripeH, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
+        int x0 = x + c * stripeW;
+        int actualW = (c == numChases - 1) ? (w - c * stripeW) : stripeW;
+        tft->fillRect(x0, y, actualW, h, tft->color565(chaseColors[c][0], chaseColors[c][1], chaseColors[c][2]));
     }
 }
